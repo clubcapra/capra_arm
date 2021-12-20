@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ovis_demo</name>
+  <version>0.0.0</version>
+  <description>
+      The ovis_demo package.
+      Contains demo for interacting with Kinova actuators. 
+  </description>
+
+  <maintainer email="ludovicvanasse@gmail.com">Ludovic Vanasse</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>kinova_driver</exec_depend>
+  <exec_depend>kinova_msgs</exec_depend>
+
+</package>
