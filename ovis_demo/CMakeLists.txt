@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(ovis_demo)
 
-add_compile_options(-std=c++14)
+add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
  roscpp
  std_msgs
@@ -18,16 +18,13 @@ catkin_package(
     LIBRARIES ovis_demo
 )
 
-include_directories(${catkin_INCLUDE_DIRS} include)
-
-add_library(ovis_demo
-include/kinova/Kinova.API.USBCommLayerUbuntu.h
-include/kinova/Kinova.API.USBCommandLayerUbuntu.h
-include/kinova/KinovaTypes.h
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}_node src/ovis_demo.cpp ${ovis_demo_LIBRARIES})
+add_executable(${PROJECT_NAME}_node src/ovis_demo.cpp include/ovis_demo.hpp)
 
-target_link_libraries(${PROJECT_NAME}_node 
-    ${catkin_LIBRARIES}
-    )
+add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES})

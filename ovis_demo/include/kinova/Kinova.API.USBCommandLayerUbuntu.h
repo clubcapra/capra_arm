@@ -11,12 +11,12 @@
 
 #include <vector>
 #include "KinovaTypes.h"
-#include "Kinova.API.CommLayerUbuntu.h"
+#include "Kinova.API.USBCommLayerUbuntu.h"
 #include <stdio.h>
 
 //This defines the the location of the communication layer.(Kinova.API.CommLayerUbuntu.so)
-#define COMM_LAYER_PATH "Kinova.API.CommLayerUbuntu.so"
-#define COMM_LAYER_ETHERNET_PATH "Kinova.API.EthCommLayerUbuntu.so"
+//#define COMM_LAYER_PATH "USBCommLayerUbuntu.so"
+//#define COMM_LAYER_ETHERNET_PATH "/home/soli/catkin_ws/src/kinova-ros/kinova_driver/lib/EthCommLayerUbuntu.so"
 
 // ***** E R R O R   C O D E S ******
 #define ERROR_INIT_API 2001      // Error while initializing the API
@@ -202,12 +202,6 @@ extern "C" KINOVAAPIUSBCOMMANDLAYER_API int ActivateCollisionAutomaticAvoidance(
 
 extern "C" KINOVAAPIUSBCOMMANDLAYER_API int ActivateSingularityAutomaticAvoidance(int state); //not available on Jaco, Jaco Spherical 6 DOF and Mico models. 
 
-extern "C" KINOVAAPIUSBCOMMANDLAYER_API int ActivateAutoNullSpaceMotionCartesian(int state);
-
-extern "C" KINOVAAPIUSBCOMMANDLAYER_API int SetControllerMuting(Controller controller, bool state);
-
-extern "C" KINOVAAPIUSBCOMMANDLAYER_API int GetControllerMuting(Controller controller, bool &state);
-
 extern "C" KINOVAAPIUSBCOMMANDLAYER_API int StartCurrentLimitation();
 
 extern "C" KINOVAAPIUSBCOMMANDLAYER_API int StopCurrentLimitation();
@@ -287,8 +281,6 @@ extern "C" KINOVAAPIUSBCOMMANDLAYER_API int GetPeripheralInventory(PeripheralInf
 extern "C" KINOVAAPIUSBCOMMANDLAYER_API int SetModel(char Command[STRING_LENGTH], char temp[STRING_LENGTH]);
 
 extern "C" KINOVAAPIUSBCOMMANDLAYER_API int GetJoystickValue(JoystickCommand &joystickCommand);
-
-extern "C" KINOVAAPIUSBCOMMANDLAYER_API int GetJoystickValueSpecific(Controller controller, JoystickCommand &joystickCommand);
 
 extern "C" KINOVAAPIUSBCOMMANDLAYER_API int SetRobotConfiguration(int ConfigID);
 
