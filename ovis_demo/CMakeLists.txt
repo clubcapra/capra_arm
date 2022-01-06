@@ -23,7 +23,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}_node src/ovis_demo.cpp include/ovis_demo.hpp)
+add_executable(${PROJECT_NAME}_node src/ovis_demo.cpp include/ovis_demo.hpp include/kinova/Kinova.API.USBCommandLayerUbuntu.h)
 
 add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
 
