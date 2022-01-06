@@ -16,7 +16,6 @@
 #include <stdexcept>
 #include <dlfcn.h>
 
-// int (*MyInitAPI)();
 // int (*MyCloseAPI)();
 // int (*MySendAdvanceTrajectory)(TrajectoryPoint command);
 // int (*MyGetDevices)(KinovaDevice devices[MAX_KINOVA_DEVICE], int& result);
@@ -176,27 +175,140 @@ void getJointCommand(const kinova_msgs::JointAnglesConstPtr& msg)
   joints_degree[6] = msg->joint7;
 }
 
+/**
+ * @brief Load both CommandLayer and CommLayer since it is
+ * necessary for the API to work correctly
+ *
+ * @return int
+ */
+int loadLibraries()
+{
+  API_command_lib = dlopen("USBCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
+  if (API_command_lib == NULL)
+  {
+    ROS_FATAL("%s", dlerror());
+    return 0;
+  }
+
+  API_comm_lib = dlopen("USBCommLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
+  if (API_comm_lib == NULL)
+  {
+    ROS_FATAL("%s", dlerror());
+    return 0;
+  }
+
+  return 1;
+}
+
+void* initCommandLayerFunction(const char* name)
+{
+  char functionName[100];
+  strcpy(functionName, name);
+  void* function_pointer = dlsym(API_command_lib, name);
+  assert(function_pointer != NULL);
+  return function_pointer;
+}
+
 void InitAPIKinova()
 {
-  dlerror();
-  kinovaHandle = dlopen("USBCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
-  if (kinovaHandle == NULL)
+  if (loadLibraries() == 0)
   {
-    ROS_ERROR("USBCommandLayerUbuntu.so couldn't be loaded. Reason: %s", dlerror());
     ros::shutdown();
   }
-  MyInitAPI = (int (*)())dlsym(kinovaHandle, "InitAPI");
-  MyCloseAPI = (int (*)())dlsym(kinovaHandle, "CloseAPI");
-  MyMoveHome = (int (*)())dlsym(kinovaHandle, "MoveHome");
-  MyGetSensorsInfo = (int (*)(SensorsInfo&))dlsym(kinovaHandle, "GetSensorsInfo");
-  MyEraseAllTrajectories = (int (*)())dlsym(kinovaHandle, "EraseAllTrajectories");
-  MyInitFingers = (int (*)())dlsym(kinovaHandle, "InitFingers");
-  MyGetDevices = (int (*)(KinovaDevice devices[MAX_KINOVA_DEVICE], int& result))dlsym(kinovaHandle, "GetDevices");
+  else
+  {
+    ROS_INFO("loading libraries successful");
+  }
 
-  MySendAdvanceTrajectory = (int (*)(TrajectoryPoint))dlsym(kinovaHandle, "SendBasicTrajectory");
-  // MySendAdvanceTrajectory = (int (*)(TrajectoryPoint)) dlsym(kinovaHandle, "SendAdvanceTrajectory");
-  MyGetAngularCommand = (int (*)(AngularPosition&))dlsym(kinovaHandle, "GetAngularPosition");
-  MyGetAngularForce = (int (*)(AngularPosition&))dlsym(kinovaHandle, "GetAngularForce");
+  int result = NO_ERROR_KINOVA;
+  std::string serial_number = "not_set";
+
+  initAPI = (int (*)())initCommandLayerFunction("InitAPI");
+  getAPIVersion = (int (*)(int[API_VERSION_COUNT]))initCommandLayerFunction("GetAPIVersion");
+  getDevices = (int (*)(KinovaDevice[MAX_KINOVA_DEVICE], int&))initCommandLayerFunction("GetDevices");
+  refresDevicesList = (int (*)())initCommandLayerFunction("RefresDevicesList");
+  setActiveDevice = (int (*)(KinovaDevice))initCommandLayerFunction("SetActiveDevice");
+  getGeneralInformations = (int (*)(GeneralInformations&))initCommandLayerFunction("GetGeneralInformations");
+  setClientConfigurations = (int (*)(ClientConfigurations))initCommandLayerFunction("SetClientConfigurations");
+  getQuickStatus = (int (*)(QuickStatus&))initCommandLayerFunction("GetQuickStatus");
+
+  int api_version[API_VERSION_COUNT];
+  result = getAPIVersion(api_version);
+  if (result != NO_ERROR_KINOVA)
+  {
+    ROS_ERROR("Could not get the Kinova API version. Result = [%d]", result);
+  }
+
+  ROS_INFO_STREAM("Initializing Kinova USB API (header version: " << COMMAND_LAYER_VERSION
+                                                                  << ", library version: " << api_version[0] << "."
+                                                                  << api_version[1] << "." << api_version[2] << ")");
+
+  result = initAPI();
+
+  if (result != NO_ERROR_KINOVA)
+  {
+    ROS_ERROR("Could not initialize Kinova API. Result = [%d]", result);
+  }
+
+  result = refresDevicesList();
+
+  if (result != NO_ERROR_KINOVA)
+  {
+    ROS_ERROR("Could not refresh the devices list. Result = [%d]", result);
+  }
+
+  result = NO_ERROR_KINOVA;
+  int devices_count = getDevices(devices_list_, result);
+
+  if (result != NO_ERROR_KINOVA)
+  {
+    ROS_ERROR("Could not get the devices list. Result = [%d]", result);
+  }
+
+  bool found_arm = false;
+  for (int device_i = 0; device_i < devices_count; device_i++)
+  {
+    // If no device is specified, just use the first available device
+    if (serial_number == "" || serial_number == "not_set" ||
+        std::strcmp(serial_number.c_str(), devices_list_[device_i].SerialNumber) == 0)
+    {
+      result = setActiveDevice(devices_list_[device_i]);
+      if (result != NO_ERROR_KINOVA)
+      {
+        ROS_ERROR("Could not set the active device. Result [%d]", result);
+      }
+
+      GeneralInformations general_info;
+      result = getGeneralInformations(general_info);
+      if (result != NO_ERROR_KINOVA)
+      {
+        ROS_ERROR("Could not get general information about the device. Result [%d]", result);
+      }
+
+      ClientConfigurations configuration;
+      setClientConfigurations(configuration);
+
+      QuickStatus quick_status;
+      getQuickStatus(quick_status);
+
+      robot_type = quick_status.RobotType;
+
+      ROS_INFO_STREAM("Found " << devices_count << " device(s), using device at index " << device_i << " (model: "
+                               << configuration.Model << ", serial number: " << devices_list_[device_i].SerialNumber
+                               << ", code version: " << general_info.CodeVersion
+                               << ", code revision: " << general_info.CodeRevision << ")");
+
+      found_arm = true;
+      break;
+    }
+  }
+
+  if (!found_arm)
+  {
+    ROS_ERROR("Could not find the specified arm (serial: %s) among the %d attached devices", serial_number.c_str(),
+              devices_count);
+    ROS_ERROR("Could not find the specified arm");
+  }
 }
 
 int main(int argc, char** argv)
@@ -219,29 +331,6 @@ int main(int argc, char** argv)
   {
     ROS_ERROR("Exception was raised when attempting to initialize kinova API.");
     ROS_ERROR("Reason: %s", exception.what());
-  }
-
-  bool Success = false;
-  int result = 0;
-  int nb_attempts = 0;
-  ROS_INFO("\"* * *              R E C H E R C H E   D U   B R A S             * * *\"");
-  while (!Success)
-  {
-    result = (*MyInitAPI)();
-    MyGetDevices(devices, result);
-    if (result != 1)
-    {
-      ROS_INFO("\"* * *             B R A S   I N T R O U V A B L E                * * *\"");
-      ROS_INFO("\"* * *                 T E N T A T I V E   #%d/3                   * * *\"", nb_attempts);
-      nb_attempts++;
-      sleep(1);
-    }
-    else
-    {
-      Success = true;
-      ROS_INFO("\"* * *      I N I T I A L I S A T I O N   T E R M I N E E         * * *\"");
-      ROS_INFO("\"* * *                  B R A S   T R O U V E                     * * *\"");
-    }
   }
 
   Client client("/c2s6s000_driver/joints_action/joint_angles", true);
