@@ -16,18 +16,6 @@
 #include <stdexcept>
 #include <dlfcn.h>
 
-// int (*MyCloseAPI)();
-// int (*MySendAdvanceTrajectory)(TrajectoryPoint command);
-// int (*MyGetDevices)(KinovaDevice devices[MAX_KINOVA_DEVICE], int& result);
-// int (*MyMoveHome)();
-// int (*MyGetSensorsInfo)(SensorsInfo&);
-// int (*MyInitFingers)();
-// int (*MyGetAngularCommand)(AngularPosition&);
-// int (*MyGetAngularForce)(AngularPosition& Response);
-// int (*MyEraseAllTrajectories)();
-
-// void* kinovaHandle;
-
 constexpr uint8_t NUMBER_OF_JOINTS = 6;
 constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 5;
 
@@ -202,8 +190,8 @@ int loadLibraries()
 
 void* initCommandLayerFunction(const char* name)
 {
-  char functionName[100];
-  strcpy(functionName, name);
+  // char functionName[100];
+  // strcpy(functionName, name);
   void* function_pointer = dlsym(API_command_lib, name);
   assert(function_pointer != NULL);
   return function_pointer;
@@ -231,6 +219,10 @@ void InitAPIKinova()
   getGeneralInformations = (int (*)(GeneralInformations&))initCommandLayerFunction("GetGeneralInformations");
   setClientConfigurations = (int (*)(ClientConfigurations))initCommandLayerFunction("SetClientConfigurations");
   getQuickStatus = (int (*)(QuickStatus&))initCommandLayerFunction("GetQuickStatus");
+
+  getAngularPosition = (int (*)(AngularPosition&))initCommandLayerFunction("GetAngularPosition");
+  setAngularControl = (int (*)())initCommandLayerFunction("SetAngularControl");
+  sendAdvanceTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("SendAdvanceTrajectory");
 
   int api_version[API_VERSION_COUNT];
   result = getAPIVersion(api_version);
@@ -287,6 +279,7 @@ void InitAPIKinova()
 
       ClientConfigurations configuration;
       setClientConfigurations(configuration);
+      strncpy(configuration.Model, "Custom", strlen("Custom") + 1);
 
       QuickStatus quick_status;
       getQuickStatus(quick_status);
@@ -333,12 +326,38 @@ int main(int argc, char** argv)
     ROS_ERROR("Reason: %s", exception.what());
   }
 
-  Client client("/c2s6s000_driver/joints_action/joint_angles", true);
-  client.waitForServer();
-
+  ros::Rate rate(15);
+  AngularPosition kinova_angles;
+  int result = 0;
   while (ros::ok())
   {
-    setJointCommand(client);
+    result = getAngularPosition(kinova_angles);
+    if (result != NO_ERROR_KINOVA)
+    {
+      ROS_ERROR("Could not get the angular position. Result = [%d]", result);
+    }
+    ROS_INFO("j2 = [%f]", kinova_angles.Actuators.Actuator3);
+
+    result = setAngularControl();
+    if (result != NO_ERROR_KINOVA)
+    {
+      ROS_INFO("Could not set angular control. Result = [%d]", result);
+    }
+
+    TrajectoryPoint kinova_joint;
+    kinova_joint.InitStruct();
+    memset(&kinova_joint, 0, sizeof(kinova_joint));
+
+    kinova_angles.Actuators.Actuator3 += 3;
+
+    kinova_joint.Position.Delay = 0.0;
+    kinova_joint.Position.Type = ANGULAR_POSITION;
+    kinova_joint.Position.Actuators = kinova_angles.Actuators;
+    kinova_joint.LimitationsActive = 0;
+
+    sendAdvanceTrajectory(kinova_joint);
+    ros::spinOnce();
+    rate.sleep();
   }
   ros::waitForShutdown();
   return 0;
