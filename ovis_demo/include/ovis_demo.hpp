@@ -13,6 +13,10 @@ int (*getGeneralInformations)(GeneralInformations&);
 int (*setClientConfigurations)(ClientConfigurations);
 int (*getQuickStatus)(QuickStatus&);
 
+int (*getAngularPosition)(AngularPosition &);
+int (*setAngularControl)();
+int (*sendAdvanceTrajectory)(TrajectoryPoint);
+
 static void* API_command_lib;
 static void* API_comm_lib;
 static KinovaDevice devices_list_[MAX_KINOVA_DEVICE];
