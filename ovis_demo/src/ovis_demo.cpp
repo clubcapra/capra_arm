@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "ovis_demo.hpp"
 
@@ -17,158 +18,145 @@
 #include <dlfcn.h>
 
 constexpr uint8_t NUMBER_OF_JOINTS = 6;
-constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 5;
+constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 3;
 
-typedef actionlib::SimpleActionClient<kinova_msgs::ArmJointAnglesAction> Client;
-static float joints_degree[6];
-static float joystick_axes[3];
-uint8_t joint_index;
+static float joints_degree[NUMBER_OF_JOINTS];
+
+static uint8_t joint_index;
 static uint8_t joint_active[NUMBER_OF_JOINTS];
-static std::string tmp_state_str;
+static bool bumper_left_pressed = false;
+static bool bumper_right_pressed = false;
+static AngularPosition joints_angles;
 
-KinovaDevice devices[MAX_KINOVA_DEVICE];
-
-void setJointCommand(Client& client)
+void setJointDegree(float &actuator, float degree)
 {
-  if (joints_degree[2] == 0.0)
-  {
-    ROS_INFO("joints_degree[2] = [%f]", joints_degree[2]);
-    return;
-  }
+  actuator += degree;
+}
 
+void sendJointCommand(std::vector<float> const joy_axes)
+{
   // Act as a deadzone for the gamepad
-  if (joystick_axes[1] < 0.1 && joystick_axes[1] > -0.1)
+  // TODO remove and use launch parameter
+  if (joy_axes[1] < 0.1 && joy_axes[1] > -0.1)
   {
     return;
   }
 
-  std::fill_n(joint_active, NUMBER_OF_JOINTS, 0);
+  int direction = (joy_axes[1] > 0.0) ? 1 : -1;
+
+  int result = 0;
+  result = getAngularPosition(joints_angles);
+  if (result != NO_ERROR_KINOVA)
+  {
+    ROS_ERROR("Could not get the angular position. Result = [%d]", result);
+  }
+
+  result = setAngularControl();
+  if (result != NO_ERROR_KINOVA)
+  {
+    ROS_INFO("Could not set angular control. Result = [%d]", result);
+  }
+
+  TrajectoryPoint trajectory_point;
+  trajectory_point.InitStruct();
+  memset(&trajectory_point, 0, sizeof(trajectory_point));
+
   switch (joint_index)
   {
     case 0:
-      joint_active[0] = 1;
+      setJointDegree(joints_angles.Actuators.Actuator1, direction * NUMBER_OF_DEGREE_PER_GOAL);
       break;
     case 1:
-      joint_active[1] = 1;
+      setJointDegree(joints_angles.Actuators.Actuator2, direction * NUMBER_OF_DEGREE_PER_GOAL);
       break;
     case 2:
-      joint_active[2] = 1;
+      setJointDegree(joints_angles.Actuators.Actuator3, direction * NUMBER_OF_DEGREE_PER_GOAL);
       break;
     case 3:
-      joint_active[3] = 1;
+      setJointDegree(joints_angles.Actuators.Actuator4, direction * NUMBER_OF_DEGREE_PER_GOAL);
       break;
     case 4:
-      joint_active[4] = 1;
+      setJointDegree(joints_angles.Actuators.Actuator5, direction * NUMBER_OF_DEGREE_PER_GOAL);
       break;
     case 5:
-      joint_active[5] = 1;
+      setJointDegree(joints_angles.Actuators.Actuator6, direction * NUMBER_OF_DEGREE_PER_GOAL);
       break;
   }
 
-  int direction = (joystick_axes[1] > 0.0) ? 1 : -1;
+  trajectory_point.Position.Delay = 0.0;
+  trajectory_point.Position.Type = ANGULAR_POSITION;
+  trajectory_point.Position.Actuators = joints_angles.Actuators;
+  trajectory_point.LimitationsActive = 0;
 
-  // ROS_INFO("Joystick axes [%f] Directory = [%d]  Joint_index = [%d] joint_active [%d] [%d] [%d] [%d] [%d] [%d] ",
-  //          joystick_axes[1], direction, joint_index, joint_active[0], joint_active[1], joint_active[2],
-  //          joint_active[3], joint_active[4], joint_active[5]);
+  ROS_INFO("Joint[%d] degree = [%f]",1,joints_angles.Actuators.Actuator1);
+  ROS_INFO("Joint[%d] degree = [%f]",2,joints_angles.Actuators.Actuator2);
+  ROS_INFO("Joint[%d] degree = [%f]",3,joints_angles.Actuators.Actuator3);
+  ROS_INFO("Joint[%d] degree = [%f]",4,joints_angles.Actuators.Actuator4);
+  ROS_INFO("Joint[%d] degree = [%f]",5,joints_angles.Actuators.Actuator5);
+  ROS_INFO("Joint[%d] degree = [%f]",6,joints_angles.Actuators.Actuator6);
+  ROS_INFO("-----------------------------");
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]",1,trajectory_point.Position.Actuators.Actuator1);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]",2,trajectory_point.Position.Actuators.Actuator2);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]",3,trajectory_point.Position.Actuators.Actuator3);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]",4,trajectory_point.Position.Actuators.Actuator4);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]",5,trajectory_point.Position.Actuators.Actuator5);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]",6,trajectory_point.Position.Actuators.Actuator6);
+  ROS_INFO("-----------------------------");
 
-  kinova_msgs::ArmJointAnglesActionGoal goal;
-  goal.goal.angles.joint1 = joints_degree[0] + direction * joint_active[0] * NUMBER_OF_DEGREE_PER_GOAL;
-  goal.goal.angles.joint2 = joints_degree[1] + direction * joint_active[1] * NUMBER_OF_DEGREE_PER_GOAL;
-  goal.goal.angles.joint3 = joints_degree[2] + direction * joint_active[2] * NUMBER_OF_DEGREE_PER_GOAL;
-  goal.goal.angles.joint4 = joints_degree[3] + direction * joint_active[3] * NUMBER_OF_DEGREE_PER_GOAL;
-  goal.goal.angles.joint5 = joints_degree[4] + direction * joint_active[4] * NUMBER_OF_DEGREE_PER_GOAL;
-  goal.goal.angles.joint6 = joints_degree[5] + direction * joint_active[5] * NUMBER_OF_DEGREE_PER_GOAL;
-  goal.goal.angles.joint7 = joints_degree[6];
+  sendAdvanceTrajectory(trajectory_point);
+}
 
-  ROS_INFO("GOAL = [%f][%f][%f][%f][%f][%f][%f]", goal.goal.angles.joint1, goal.goal.angles.joint2,
-           goal.goal.angles.joint3, goal.goal.angles.joint4, goal.goal.angles.joint5, goal.goal.angles.joint6,
-           goal.goal.angles.joint7);
-
-  ROS_INFO("CANCELING PREVIOUS GOAL");
-  if (client.getState() == actionlib::SimpleClientGoalState::ACTIVE)
+bool checkButtonPressed(int const button, bool & button_pressed_value)
+{
+  bool return_value = false;
+  if(button == 1)
   {
-    client.cancelGoal();
-    return;
+    button_pressed_value = true;
+  }
+  else if (button_pressed_value == true) 
+  {
+    return_value = true;
+    button_pressed_value = false;
+  }
+  else 
+  {
+    return_value = false;
+  }
+  return return_value;
+}
+
+void manageJointIndex(const std::vector<int> joy_buttons)
+{
+  // Left bumper = 4 Right bumper = 5
+  if(checkButtonPressed(joy_buttons[4], bumper_left_pressed) == true)
+  {
+    if(joint_index > 0)
+    {
+      joint_index--;
+      ROS_INFO("Decrease joint_index to [%d]",joint_index);
+    }
   }
 
-  ROS_INFO("SENDING NEW GOAL");
-  client.sendGoal(goal.goal);
-  // ros::Duration(1).sleep();
-  // while (client.getState() != actionlib::SimpleClientGoalState::SUCCEEDED)
-  // {
-  //   ROS_INFO("client state = [%s]", client.getState().toString().c_str());
-  //   if (client.getState() == actionlib::SimpleClientGoalState::ABORTED)
-  //   {
-  //     client.cancelGoal();
-  //   }
-  // }
-
-  // if (client.waitForResult(ros::Duration(2.0)))
-  // {
-  //   ROS_INFO("Goal acheived");
-  // }
-  // else
-  // {
-  //   ROS_INFO("Goal failed");
-  //   client.cancelAllGoals();
-  // }
+  if(checkButtonPressed(joy_buttons[5], bumper_right_pressed)) 
+  {
+    if(joint_index < NUMBER_OF_JOINTS - 1)
+    {
+      joint_index++;
+      ROS_INFO("Increase joint_index to [%d]",joint_index);
+    }
+  }
 }
 
 void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
-  // ROS_INFO("joy axes 0 = [%f] 1 = [%f] 2 = [%f] 3 = [%f]", joy->axes[0], joy->axes[1], joy->axes[3], joy->axes[4]);
-  // ROS_INFO("joy buttons 0 = [%d] 1 = [%d] 2 = [%d] 3 = [%d] 4 = [%d] 5 = [%d] 6 = [%d] 7 = [%d] 8 = [%d] 9 = [%d] 10
-  // = "
-  //          "[%d]",
-  //          joy->buttons[0], joy->buttons[1], joy->buttons[2], joy->buttons[3], joy->buttons[4], joy->buttons[5],
-  //          joy->buttons[6], joy->buttons[7], joy->buttons[8], joy->buttons[9], joy->buttons[10]);
-  joystick_axes[0] = joy->axes[0];
-  joystick_axes[1] = joy->axes[1];
-  joystick_axes[2] = joy->axes[3];
-  joystick_axes[3] = joy->axes[4];
+  manageJointIndex(joy->buttons);
 
-  // Left bumper = 4 Right bumper = 5
-  if (joy->buttons[4] == 1 || joy->buttons[5] == 1)
+  if(joy->buttons[0] == 1)
   {
-    ROS_INFO("joint_index = [%d]", joint_index);
-    if ((joint_index == 0 && joy->buttons[4] == 1) || (joint_index == NUMBER_OF_JOINTS - 1 && joy->buttons[5] == 1))
-    {
-      return;
-    }
-    if (joy->buttons[4] == 1)
-    {
-      joint_index--;
-      ROS_INFO("joint_index = [%d]", joint_index);
-      return;
-    }
-    else if (joy->buttons[5] == 1)
-    {
-      joint_index++;
-      ROS_INFO("joint_index = [%d]", joint_index);
-      return;
-    }
+    sendJointCommand(joy->axes);
   }
 }
 
-void getJointCommand(const kinova_msgs::JointAnglesConstPtr& msg)
-{
-  // ROS_INFO("joint 1 = [%f] 2 = [%f] 3 = [%f] 4 = [%f] 5 = [%f] 6 = [%f] 7 = [%f]", msg->joint1, msg->joint2,
-  //          msg->joint3, msg->joint4, msg->joint5, msg->joint6, msg->joint7);
-  joints_degree[0] = msg->joint1;
-  joints_degree[1] = msg->joint2;
-  joints_degree[2] = msg->joint3;
-  joints_degree[3] = msg->joint4;
-  joints_degree[4] = msg->joint5;
-  joints_degree[5] = msg->joint6;
-  joints_degree[6] = msg->joint7;
-}
-
-/**
- * @brief Load both CommandLayer and CommLayer since it is
- * necessary for the API to work correctly
- *
- * @return int
- */
 int loadLibraries()
 {
   API_command_lib = dlopen("USBCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
@@ -190,8 +178,6 @@ int loadLibraries()
 
 void* initCommandLayerFunction(const char* name)
 {
-  // char functionName[100];
-  // strcpy(functionName, name);
   void* function_pointer = dlsym(API_command_lib, name);
   assert(function_pointer != NULL);
   return function_pointer;
@@ -310,11 +296,7 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "ovis_demo_node");
   ros::NodeHandle nh;
-  ros::Subscriber sub = nh.subscribe("/c2s6s000_driver/out/joint_command", 1000, getJointCommand);
   ros::Subscriber joy_sub = nh.subscribe("/joy", 1000, joyCallback);
-
-  ros::AsyncSpinner spinner(0);
-  spinner.start();
 
   try
   {
@@ -326,39 +308,6 @@ int main(int argc, char** argv)
     ROS_ERROR("Reason: %s", exception.what());
   }
 
-  ros::Rate rate(15);
-  AngularPosition kinova_angles;
-  int result = 0;
-  while (ros::ok())
-  {
-    result = getAngularPosition(kinova_angles);
-    if (result != NO_ERROR_KINOVA)
-    {
-      ROS_ERROR("Could not get the angular position. Result = [%d]", result);
-    }
-    ROS_INFO("j2 = [%f]", kinova_angles.Actuators.Actuator3);
-
-    result = setAngularControl();
-    if (result != NO_ERROR_KINOVA)
-    {
-      ROS_INFO("Could not set angular control. Result = [%d]", result);
-    }
-
-    TrajectoryPoint kinova_joint;
-    kinova_joint.InitStruct();
-    memset(&kinova_joint, 0, sizeof(kinova_joint));
-
-    kinova_angles.Actuators.Actuator3 += 3;
-
-    kinova_joint.Position.Delay = 0.0;
-    kinova_joint.Position.Type = ANGULAR_POSITION;
-    kinova_joint.Position.Actuators = kinova_angles.Actuators;
-    kinova_joint.LimitationsActive = 0;
-
-    sendAdvanceTrajectory(kinova_joint);
-    ros::spinOnce();
-    rate.sleep();
-  }
-  ros::waitForShutdown();
+  ros::spin();
   return 0;
 }
