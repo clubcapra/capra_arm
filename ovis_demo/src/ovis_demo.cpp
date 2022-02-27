@@ -30,6 +30,8 @@ static AngularPosition joints_angles;
 
 static unsigned int const LEFT_BUMPER_INDEX = 4;
 static unsigned int const RIGHT_BUMPER_INDEX = 5;
+
+void setJointDegree(float& actuator, float degree)
 {
   actuator += degree;
 }
@@ -65,61 +67,99 @@ void sendJointCommand(std::vector<float> const joy_axes)
   switch (joint_index)
   {
     case 0:
+      ROS_INFO("MOVING JOINT #0");
       setJointDegree(joints_angles.Actuators.Actuator1, direction * NUMBER_OF_DEGREE_PER_GOAL);
+      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
       break;
     case 1:
+      ROS_INFO("MOVING JOINT #1");
+      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
       setJointDegree(joints_angles.Actuators.Actuator2, direction * NUMBER_OF_DEGREE_PER_GOAL);
+      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
       break;
     case 2:
+      ROS_INFO("MOVING JOINT #2");
+      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
       setJointDegree(joints_angles.Actuators.Actuator3, direction * NUMBER_OF_DEGREE_PER_GOAL);
+      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
       break;
     case 3:
+      ROS_INFO("MOVING JOINT #3");
+      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
       setJointDegree(joints_angles.Actuators.Actuator4, direction * NUMBER_OF_DEGREE_PER_GOAL);
+      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
       break;
     case 4:
+      ROS_INFO("MOVING JOINT #4");
       setJointDegree(joints_angles.Actuators.Actuator5, direction * NUMBER_OF_DEGREE_PER_GOAL);
+      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
       break;
     case 5:
+      ROS_INFO("MOVING JOINT #5");
       setJointDegree(joints_angles.Actuators.Actuator6, direction * NUMBER_OF_DEGREE_PER_GOAL);
+      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
+      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
       break;
   }
 
   trajectory_point.Position.Delay = 0.0;
   trajectory_point.Position.Type = ANGULAR_POSITION;
+
+  ROS_INFO("Joint[%d] degree = [%f]", 1, joints_angles.Actuators.Actuator1);
+  ROS_INFO("Joint[%d] degree = [%f]", 2, joints_angles.Actuators.Actuator2);
+  ROS_INFO("Joint[%d] degree = [%f]", 3, joints_angles.Actuators.Actuator3);
+  ROS_INFO("Joint[%d] degree = [%f]", 4, joints_angles.Actuators.Actuator4);
+  ROS_INFO("Joint[%d] degree = [%f]", 5, joints_angles.Actuators.Actuator5);
+  ROS_INFO("Joint[%d] degree = [%f]", 6, joints_angles.Actuators.Actuator6);
+
   trajectory_point.Position.Actuators = joints_angles.Actuators;
   trajectory_point.LimitationsActive = 0;
 
-  ROS_INFO("Joint[%d] degree = [%f]",1,joints_angles.Actuators.Actuator1);
-  ROS_INFO("Joint[%d] degree = [%f]",2,joints_angles.Actuators.Actuator2);
-  ROS_INFO("Joint[%d] degree = [%f]",3,joints_angles.Actuators.Actuator3);
-  ROS_INFO("Joint[%d] degree = [%f]",4,joints_angles.Actuators.Actuator4);
-  ROS_INFO("Joint[%d] degree = [%f]",5,joints_angles.Actuators.Actuator5);
-  ROS_INFO("Joint[%d] degree = [%f]",6,joints_angles.Actuators.Actuator6);
   ROS_INFO("-----------------------------");
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]",1,trajectory_point.Position.Actuators.Actuator1);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]",2,trajectory_point.Position.Actuators.Actuator2);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]",3,trajectory_point.Position.Actuators.Actuator3);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]",4,trajectory_point.Position.Actuators.Actuator4);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]",5,trajectory_point.Position.Actuators.Actuator5);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]",6,trajectory_point.Position.Actuators.Actuator6);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 1, trajectory_point.Position.Actuators.Actuator1);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 2, trajectory_point.Position.Actuators.Actuator2);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 3, trajectory_point.Position.Actuators.Actuator3);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 4, trajectory_point.Position.Actuators.Actuator4);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 5, trajectory_point.Position.Actuators.Actuator5);
+  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 6, trajectory_point.Position.Actuators.Actuator6);
   ROS_INFO("-----------------------------");
 
   sendAdvanceTrajectory(trajectory_point);
 }
 
-bool checkButtonPressed(int const button, bool & button_pressed_value)
+bool checkButtonPressed(int const button, bool& button_pressed_value)
 {
   bool return_value = false;
-  if(button == 1)
+  if (button == 1)
   {
     button_pressed_value = true;
   }
-  else if (button_pressed_value == true) 
+  else if (button_pressed_value == true)
   {
     return_value = true;
     button_pressed_value = false;
   }
-  else 
+  else
   {
     return_value = false;
   }
@@ -129,21 +169,21 @@ bool checkButtonPressed(int const button, bool & button_pressed_value)
 void manageJointIndex(const std::vector<int> joy_buttons)
 {
   // Left bumper = 4 Right bumper = 5
-  if(checkButtonPressed(joy_buttons[4], bumper_left_pressed) == true)
+  if (checkButtonPressed(joy_buttons[LEFT_BUMPER_INDEX], bumper_left_pressed) == true)
   {
-    if(joint_index > 0)
+    if (joint_index > 0)
     {
       joint_index--;
-      ROS_INFO("Decrease joint_index to [%d]",joint_index);
+      ROS_INFO("Decrease joint_index to [%d]", joint_index);
     }
   }
 
-  if(checkButtonPressed(joy_buttons[5], bumper_right_pressed)) 
+  if (checkButtonPressed(joy_buttons[RIGHT_BUMPER_INDEX], bumper_right_pressed))
   {
-    if(joint_index < NUMBER_OF_JOINTS - 1)
+    if (joint_index < NUMBER_OF_JOINTS - 1)
     {
       joint_index++;
-      ROS_INFO("Increase joint_index to [%d]",joint_index);
+      ROS_INFO("Increase joint_index to [%d]", joint_index);
     }
   }
 }
@@ -152,7 +192,7 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   manageJointIndex(joy->buttons);
 
-  if(joy->buttons[0] == 1)
+  if (joy->buttons[0] == 1)
   {
     sendJointCommand(joy->axes);
   }
@@ -297,7 +337,7 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "ovis_demo_node");
   ros::NodeHandle nh;
-  ros::Subscriber joy_sub = nh.subscribe("/joy", 1000, joyCallback);
+  ros::Subscriber joy_sub = nh.subscribe("/joy", 500, joyCallback);
 
   try
   {
