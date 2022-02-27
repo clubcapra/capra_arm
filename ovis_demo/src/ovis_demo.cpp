@@ -28,7 +28,8 @@ static bool bumper_left_pressed = false;
 static bool bumper_right_pressed = false;
 static AngularPosition joints_angles;
 
-void setJointDegree(float &actuator, float degree)
+static unsigned int const LEFT_BUMPER_INDEX = 4;
+static unsigned int const RIGHT_BUMPER_INDEX = 5;
 {
   actuator += degree;
 }
