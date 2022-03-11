@@ -13,9 +13,10 @@ int (*getGeneralInformations)(GeneralInformations&);
 int (*setClientConfigurations)(ClientConfigurations);
 int (*getQuickStatus)(QuickStatus&);
 
-int (*getAngularPosition)(AngularPosition &);
+int (*getAngularPosition)(AngularPosition&);
 int (*setAngularControl)();
 int (*sendAdvanceTrajectory)(TrajectoryPoint);
+int (*sendBasicTrajectory)(TrajectoryPoint command);
 
 static void* API_command_lib;
 static void* API_comm_lib;
