@@ -18,23 +18,17 @@
 #include <dlfcn.h>
 
 constexpr uint8_t NUMBER_OF_JOINTS = 6;
-constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 3;
-
-static float joints_degree[NUMBER_OF_JOINTS];
+constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 1;
 
 static uint8_t joint_index;
 static uint8_t joint_active[NUMBER_OF_JOINTS];
 static bool bumper_left_pressed = false;
 static bool bumper_right_pressed = false;
 static AngularPosition joints_angles;
+static TrajectoryPoint trajectory_point;
 
 static unsigned int const LEFT_BUMPER_INDEX = 4;
 static unsigned int const RIGHT_BUMPER_INDEX = 5;
-
-void setJointDegree(float& actuator, float degree)
-{
-  actuator += degree;
-}
 
 void sendJointCommand(std::vector<float> const joy_axes)
 {
@@ -54,76 +48,33 @@ void sendJointCommand(std::vector<float> const joy_axes)
     ROS_ERROR("Could not get the angular position. Result = [%d]", result);
   }
 
-  result = setAngularControl();
-  if (result != NO_ERROR_KINOVA)
-  {
-    ROS_INFO("Could not set angular control. Result = [%d]", result);
-  }
-
-  TrajectoryPoint trajectory_point;
-  trajectory_point.InitStruct();
-  memset(&trajectory_point, 0, sizeof(trajectory_point));
-
   switch (joint_index)
   {
     case 0:
       ROS_INFO("MOVING JOINT #0");
-      setJointDegree(joints_angles.Actuators.Actuator1, direction * NUMBER_OF_DEGREE_PER_GOAL);
-      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
+      trajectory_point.Position.Actuators.Actuator1 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
     case 1:
       ROS_INFO("MOVING JOINT #1");
-      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
-      setJointDegree(joints_angles.Actuators.Actuator2, direction * NUMBER_OF_DEGREE_PER_GOAL);
-      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
+      trajectory_point.Position.Actuators.Actuator2 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
     case 2:
       ROS_INFO("MOVING JOINT #2");
-      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
-      setJointDegree(joints_angles.Actuators.Actuator3, direction * NUMBER_OF_DEGREE_PER_GOAL);
-      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
+      trajectory_point.Position.Actuators.Actuator3 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
     case 3:
       ROS_INFO("MOVING JOINT #3");
-      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
-      setJointDegree(joints_angles.Actuators.Actuator4, direction * NUMBER_OF_DEGREE_PER_GOAL);
-      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
+      trajectory_point.Position.Actuators.Actuator4 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
     case 4:
       ROS_INFO("MOVING JOINT #4");
-      setJointDegree(joints_angles.Actuators.Actuator5, direction * NUMBER_OF_DEGREE_PER_GOAL);
-      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator6, 0);
+      trajectory_point.Position.Actuators.Actuator5 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
     case 5:
       ROS_INFO("MOVING JOINT #5");
-      setJointDegree(joints_angles.Actuators.Actuator6, direction * NUMBER_OF_DEGREE_PER_GOAL);
-      // setJointDegree(joints_angles.Actuators.Actuator2, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator3, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator4, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator5, 0);
-      // setJointDegree(joints_angles.Actuators.Actuator1, 0);
+      trajectory_point.Position.Actuators.Actuator6 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
   }
-
-  trajectory_point.Position.Delay = 0.0;
-  trajectory_point.Position.Type = ANGULAR_POSITION;
 
   ROS_INFO("Joint[%d] degree = [%f]", 1, joints_angles.Actuators.Actuator1);
   ROS_INFO("Joint[%d] degree = [%f]", 2, joints_angles.Actuators.Actuator2);
@@ -131,9 +82,6 @@ void sendJointCommand(std::vector<float> const joy_axes)
   ROS_INFO("Joint[%d] degree = [%f]", 4, joints_angles.Actuators.Actuator4);
   ROS_INFO("Joint[%d] degree = [%f]", 5, joints_angles.Actuators.Actuator5);
   ROS_INFO("Joint[%d] degree = [%f]", 6, joints_angles.Actuators.Actuator6);
-
-  trajectory_point.Position.Actuators = joints_angles.Actuators;
-  trajectory_point.LimitationsActive = 0;
 
   ROS_INFO("-----------------------------");
   ROS_INFO("Trajectory Joint[%d] degree = [%f]", 1, trajectory_point.Position.Actuators.Actuator1);
@@ -144,7 +92,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
   ROS_INFO("Trajectory Joint[%d] degree = [%f]", 6, trajectory_point.Position.Actuators.Actuator6);
   ROS_INFO("-----------------------------");
 
-  sendAdvanceTrajectory(trajectory_point);
+  sendBasicTrajectory(trajectory_point);
 }
 
 bool checkButtonPressed(int const button, bool& button_pressed_value)
@@ -192,7 +140,7 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   manageJointIndex(joy->buttons);
 
-  if (joy->buttons[0] == 1)
+  if (joy->buttons[0] == 1)  // TODO Add constant for A button
   {
     sendJointCommand(joy->axes);
   }
@@ -250,6 +198,7 @@ void InitAPIKinova()
   getAngularPosition = (int (*)(AngularPosition&))initCommandLayerFunction("GetAngularPosition");
   setAngularControl = (int (*)())initCommandLayerFunction("SetAngularControl");
   sendAdvanceTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("SendAdvanceTrajectory");
+  sendBasicTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("SendBasicTrajectory");
 
   int api_version[API_VERSION_COUNT];
   result = getAPIVersion(api_version);
@@ -319,7 +268,10 @@ void InitAPIKinova()
                                << ", code revision: " << general_info.CodeRevision << ")");
 
       found_arm = true;
-      break;
+      if (found_arm)
+      {
+        break;
+      }
     }
   }
 
@@ -337,8 +289,6 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "ovis_demo_node");
   ros::NodeHandle nh;
-  ros::Subscriber joy_sub = nh.subscribe("/joy", 500, joyCallback);
-
   try
   {
     InitAPIKinova();
@@ -349,6 +299,20 @@ int main(int argc, char** argv)
     ROS_ERROR("Reason: %s", exception.what());
   }
 
-  ros::spin();
+  int result = 0;
+  result = getAngularPosition(joints_angles);
+  trajectory_point.InitStruct();
+  trajectory_point.Position.Type = ANGULAR_POSITION;
+  trajectory_point.Position.Delay = 0.0;
+  trajectory_point.Position.Actuators = joints_angles.Actuators;
+
+  ros::Subscriber joy_sub = nh.subscribe("/joy", 1, joyCallback);
+  // ros::Rate rate(10);
+  while (ros::ok())
+  {
+    ros::spinOnce();
+    // rate.sleep();
+  }
+
   return 0;
 }
