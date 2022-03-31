@@ -8,13 +8,14 @@ find_package(catkin REQUIRED COMPONENTS
  geometry_msgs
  kinova_driver
  kinova_msgs
+ ovis_msgs
 )
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 catkin_package( 
     INCLUDE_DIRS include
-    CATKIN_DEPENDS kinova_driver kinova_msgs roscpp std_msgs geometry_msgs
+    CATKIN_DEPENDS kinova_driver kinova_msgs roscpp std_msgs geometry_msgs ovis_msgs
     LIBRARIES ovis_driver
 )
 

@@ -1,0 +1,2 @@
+uint8 joint_index
+float32 joint_angle
