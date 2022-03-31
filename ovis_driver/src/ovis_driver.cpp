@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "ovis_demo.hpp"
+#include "ovis_driver.hpp"
 
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
@@ -29,16 +29,10 @@ static TrajectoryPoint trajectory_point;
 
 static unsigned int const LEFT_BUMPER_INDEX = 4;
 static unsigned int const RIGHT_BUMPER_INDEX = 5;
+static unsigned int const INVERSE = -1;
 
 void sendJointCommand(std::vector<float> const joy_axes)
 {
-  // Act as a deadzone for the gamepad
-  // TODO remove and use launch parameter
-  if (joy_axes[1] < 0.1 && joy_axes[1] > -0.1)
-  {
-    return;
-  }
-
   int direction = (joy_axes[1] > 0.0) ? 1 : -1;
 
   int result = 0;
@@ -56,7 +50,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
       break;
     case 1:
       ROS_INFO("MOVING JOINT #1");
-      trajectory_point.Position.Actuators.Actuator2 += direction * NUMBER_OF_DEGREE_PER_GOAL;
+      trajectory_point.Position.Actuators.Actuator2 += INVERSE * direction * NUMBER_OF_DEGREE_PER_GOAL;
       break;
     case 2:
       ROS_INFO("MOVING JOINT #2");
@@ -76,21 +70,21 @@ void sendJointCommand(std::vector<float> const joy_axes)
       break;
   }
 
-  ROS_INFO("Joint[%d] degree = [%f]", 1, joints_angles.Actuators.Actuator1);
-  ROS_INFO("Joint[%d] degree = [%f]", 2, joints_angles.Actuators.Actuator2);
-  ROS_INFO("Joint[%d] degree = [%f]", 3, joints_angles.Actuators.Actuator3);
-  ROS_INFO("Joint[%d] degree = [%f]", 4, joints_angles.Actuators.Actuator4);
-  ROS_INFO("Joint[%d] degree = [%f]", 5, joints_angles.Actuators.Actuator5);
-  ROS_INFO("Joint[%d] degree = [%f]", 6, joints_angles.Actuators.Actuator6);
+  // ROS_INFO("Joint[%d] degree = [%f]", 1, joints_angles.Actuators.Actuator1);
+  // ROS_INFO("Joint[%d] degree = [%f]", 2, joints_angles.Actuators.Actuator2);
+  // ROS_INFO("Joint[%d] degree = [%f]", 3, joints_angles.Actuators.Actuator3);
+  // ROS_INFO("Joint[%d] degree = [%f]", 4, joints_angles.Actuators.Actuator4);
+  // ROS_INFO("Joint[%d] degree = [%f]", 5, joints_angles.Actuators.Actuator5);
+  // ROS_INFO("Joint[%d] degree = [%f]", 6, joints_angles.Actuators.Actuator6);
 
-  ROS_INFO("-----------------------------");
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 1, trajectory_point.Position.Actuators.Actuator1);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 2, trajectory_point.Position.Actuators.Actuator2);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 3, trajectory_point.Position.Actuators.Actuator3);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 4, trajectory_point.Position.Actuators.Actuator4);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 5, trajectory_point.Position.Actuators.Actuator5);
-  ROS_INFO("Trajectory Joint[%d] degree = [%f]", 6, trajectory_point.Position.Actuators.Actuator6);
-  ROS_INFO("-----------------------------");
+  // ROS_INFO("-----------------------------");
+  // ROS_INFO("Trajectory Joint[%d] degree = [%f]", 1, trajectory_point.Position.Actuators.Actuator1);
+  // ROS_INFO("Trajectory Joint[%d] degree = [%f]", 2, trajectory_point.Position.Actuators.Actuator2);
+  // ROS_INFO("Trajectory Joint[%d] degree = [%f]", 3, trajectory_point.Position.Actuators.Actuator3);
+  // ROS_INFO("Trajectory Joint[%d] degree = [%f]", 4, trajectory_point.Position.Actuators.Actuator4);
+  // ROS_INFO("Trajectory Joint[%d] degree = [%f]", 5, trajectory_point.Position.Actuators.Actuator5);
+  // ROS_INFO("Trajectory Joint[%d] degree = [%f]", 6, trajectory_point.Position.Actuators.Actuator6);
+  // ROS_INFO("-----------------------------");
 
   sendBasicTrajectory(trajectory_point);
 }
@@ -287,7 +281,7 @@ int main(int argc, char** argv)
 {
   joint_index = 0;
 
-  ros::init(argc, argv, "ovis_demo_node");
+  ros::init(argc, argv, "ovis_driver_node");
   ros::NodeHandle nh;
   try
   {
@@ -307,11 +301,9 @@ int main(int argc, char** argv)
   trajectory_point.Position.Actuators = joints_angles.Actuators;
 
   ros::Subscriber joy_sub = nh.subscribe("/joy", 1, joyCallback);
-  // ros::Rate rate(10);
   while (ros::ok())
   {
     ros::spinOnce();
-    // rate.sleep();
   }
 
   return 0;

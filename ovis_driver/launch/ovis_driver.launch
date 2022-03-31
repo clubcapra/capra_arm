@@ -1,0 +1,4 @@
+<launch>
+    <arg name="robot_namespace" default="/markhor" />
+    <node name="ovis_driver_node" pkg="ovis_driver" type="ovis_driver_node" ns="$(arg robot_namespace)" output="screen" />
+</launch>

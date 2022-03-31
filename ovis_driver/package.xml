@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ovis_demo</name>
+  <name>ovis_driver</name>
   <version>0.0.0</version>
   <description>
-      The ovis_demo package.
-      Contains demo for interacting with Kinova actuators. 
+      The ovis_driver package.
+      Contains driver for interacting with Kinova actuators. 
   </description>
 
   <maintainer email="ludovicvanasse@gmail.com">Ludovic Vanasse</maintainer>
