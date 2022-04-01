@@ -17,6 +17,7 @@
   <build_depend>kinova_driver</build_depend>
   <build_depend>kinova_msgs</build_depend>
   <build_depend>ovis_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>std_msgs</exec_depend>
@@ -24,5 +25,5 @@
   <exec_depend>kinova_driver</exec_depend>
   <exec_depend>kinova_msgs</exec_depend>
   <exec_depend>ovis_msgs</exec_depend>
-
+  <exec_depend>message_runtime</exec_depend>
 </package>
