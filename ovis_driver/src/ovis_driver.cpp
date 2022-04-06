@@ -25,7 +25,7 @@
 
 constexpr uint8_t NUMBER_OF_JOINTS = 6;
 constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 1;
-constexpr uint8_t NUMBER_OF_DEGREE_PER_SECOND = 40;
+constexpr uint8_t NUMBER_OF_DEGREE_PER_SECOND = 20;
 
 static uint8_t joint_index;
 static uint8_t joint_active[NUMBER_OF_JOINTS];
@@ -36,7 +36,7 @@ static TrajectoryPoint trajectory_point;
 static TrajectoryPoint home_trajectory_point;
 static unsigned int const LEFT_BUMPER_INDEX = 4;
 static unsigned int const RIGHT_BUMPER_INDEX = 5;
-static unsigned int const INVERSE = -1;
+static const int INVERSE = -1;
 
 void printDebugInfo()
 {
@@ -53,7 +53,7 @@ void printDebugInfo()
 
 void sendJointCommand(std::vector<float> const joy_axes)
 {
-  printDebugInfo();
+  //printDebugInfo();
 
   // adds a deadband to joysick
   if (joy_axes[1] < 0.1 && joy_axes[1] > -0.1)
@@ -61,7 +61,13 @@ void sendJointCommand(std::vector<float> const joy_axes)
     return;
   }
 
+  //  if (joy_axes[0] < 0.1 && joy_axes[0] > -0.1)
+  // {
+  //   return;
+  // }
+
   int direction = (joy_axes[1] > 0.0) ? 1 : -1;
+  //int horizontal_direction = (joy_axes[0] > 0.0) ? 1 : -1;
 
   int result = 0;
   result = getAngularPosition(joints_angles);
@@ -85,7 +91,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
 
       // trajectory_point.Position.Actuators.Actuator1 += direction * NUMBER_OF_DEGREE_PER_GOAL;
 
-      trajectory_point.Position.Actuators.Actuator1 = direction * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator1 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
       trajectory_point.Position.Actuators.Actuator2 = 0;
       trajectory_point.Position.Actuators.Actuator3 = 0;
       trajectory_point.Position.Actuators.Actuator4 = 0;
@@ -97,7 +103,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
       // trajectory_point.Position.Actuators.Actuator2 += INVERSE * direction * NUMBER_OF_DEGREE_PER_GOAL;
 
       trajectory_point.Position.Actuators.Actuator1 = 0;
-      trajectory_point.Position.Actuators.Actuator2 = INVERSE * direction * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator2 = INVERSE*joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
       trajectory_point.Position.Actuators.Actuator3 = 0;
       trajectory_point.Position.Actuators.Actuator4 = 0;
       trajectory_point.Position.Actuators.Actuator5 = 0;
@@ -109,7 +115,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
       // trajectory_point.Position.Actuators.Actuator3 += direction * NUMBER_OF_DEGREE_PER_GOAL;
       trajectory_point.Position.Actuators.Actuator1 = 0;
       trajectory_point.Position.Actuators.Actuator2 = 0;
-      trajectory_point.Position.Actuators.Actuator3 = direction * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator3 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
       trajectory_point.Position.Actuators.Actuator4 = 0;
       trajectory_point.Position.Actuators.Actuator5 = 0;
       trajectory_point.Position.Actuators.Actuator6 = 0;
@@ -120,7 +126,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
       trajectory_point.Position.Actuators.Actuator1 = 0;
       trajectory_point.Position.Actuators.Actuator2 = 0;
       trajectory_point.Position.Actuators.Actuator3 = 0;
-      trajectory_point.Position.Actuators.Actuator4 = direction * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator4 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
       trajectory_point.Position.Actuators.Actuator5 = 0;
       trajectory_point.Position.Actuators.Actuator6 = 0;
       break;
@@ -131,7 +137,7 @@ void sendJointCommand(std::vector<float> const joy_axes)
       trajectory_point.Position.Actuators.Actuator3 = 0;
       trajectory_point.Position.Actuators.Actuator4 = 0;
       trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = direction * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator5 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
       trajectory_point.Position.Actuators.Actuator6 = 0;
       break;
     case 5:
@@ -143,15 +149,23 @@ void sendJointCommand(std::vector<float> const joy_axes)
       trajectory_point.Position.Actuators.Actuator4 = 0;
       trajectory_point.Position.Actuators.Actuator5 = 0;
       trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator6 = direction * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator6 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
       break;
   }
 
-
-  for(int i=0;i<10;i++)
+  //envoi la commande de velocite sur le joint tant que le joystick n'est pas en position centrale
+  do
   {
+
+    ROS_INFO(" COMMAND SENT ON JOINT 2: [%f] \n", trajectory_point.Position.Actuators.Actuator2);
     sendBasicTrajectory(trajectory_point);
-  }
+    usleep(1);
+
+  } while (joy_axes[1] < 0.1 && joy_axes[1] > -0.1);
+  
+  
+
+
 }
 
 bool checkButtonPressed(int const button, bool& button_pressed_value)
