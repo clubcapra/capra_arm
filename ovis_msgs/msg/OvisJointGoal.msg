@@ -1,2 +1,2 @@
 uint8 joint_index
-float32 joint_angle
+float32 joint_velocity
