@@ -21,6 +21,7 @@ catkin_package(
 
 include_directories(
   include
+  include/kinova
   ${catkin_INCLUDE_DIRS}
 )
 
