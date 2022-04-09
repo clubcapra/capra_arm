@@ -12,8 +12,6 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
-// #include <actionlib/client/simple_action_client.h>
-// #include <actionlib/client/simple_client_goal_state.h>
 #include <kinova_msgs/ArmJointAnglesAction.h>
 #include <Kinova.API.UsbCommandLayerUbuntu.h>
 
@@ -276,23 +274,18 @@ void OvisJointGoalCallback(const ovis_msgs::OvisJointGoal::ConstPtr& msg)
       break;
     case 1:
       trajectory_point.Position.Actuators.Actuator2 = msg->joint_angle;
-      ;
       break;
     case 2:
       trajectory_point.Position.Actuators.Actuator3 = msg->joint_angle;
-      ;
       break;
     case 3:
       trajectory_point.Position.Actuators.Actuator4 = msg->joint_angle;
-      ;
       break;
     case 4:
       trajectory_point.Position.Actuators.Actuator5 = msg->joint_angle;
-      ;
       break;
     case 5:
       trajectory_point.Position.Actuators.Actuator6 = msg->joint_angle;
-      ;
       break;
   }
 
