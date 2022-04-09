@@ -12,7 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
  ovis_msgs
 )
 
-link_directories(${PROJECT_SOURCE_DIR}/lib)
+if(${CMAKE_LIBRARY_ARCHITECTURE} STREQUAL "aarch64-linux-gnu")
+  link_directories(${PROJECT_SOURCE_DIR}/lib/aarch64)
+else()
+  link_directories(${PROJECT_SOURCE_DIR}/lib/x86-64)
+endif()
 
 catkin_package( 
     INCLUDE_DIRS include
