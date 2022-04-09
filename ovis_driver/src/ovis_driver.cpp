@@ -130,14 +130,14 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 
 int loadLibraries()
 {
-  API_command_lib = dlopen("USBCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
+  API_command_lib = dlopen("Kinova.API.USBCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
   if (API_command_lib == NULL)
   {
     ROS_FATAL("%s", dlerror());
     return 0;
   }
 
-  API_comm_lib = dlopen("USBCommLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
+  API_comm_lib = dlopen("Kinova.API.CommLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
   if (API_comm_lib == NULL)
   {
     ROS_FATAL("%s", dlerror());
