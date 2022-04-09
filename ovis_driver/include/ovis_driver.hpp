@@ -1,7 +1,7 @@
 #ifndef OVIS_DEMO_H
 #define OVIS_DEMO_H
 
-#include "Kinova.API.UsbCommandLayerUbuntu.h"
+#include "Kinova.API.USBCommandLayerUbuntu.h"
 #include "KinovaTypes.h"
 
 int (*initAPI)(void);

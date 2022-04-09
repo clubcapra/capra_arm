@@ -13,7 +13,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
 #include <kinova_msgs/ArmJointAnglesAction.h>
-#include <Kinova.API.UsbCommandLayerUbuntu.h>
+#include "Kinova.API.USBCommandLayerUbuntu.h"
 
 #include <inttypes.h>
 #include <string>
