@@ -1,8 +1,8 @@
 #include "ovis_arm.hpp"
 
-#include "ovis_msgs/OvisJointGoal.h"
+#include "ovis_msgs/OvisArmJointVelocity.h"
 #include "ovis_msgs/OvisIKGoal.h"
-#include "ovis_msgs/HomeJoint.h"
+#include <std_srvs/Trigger.h>
 
 #include <ros/ros.h>
 
@@ -164,7 +164,7 @@ void InitAPIKinova()
   }
 }
 
-void OvisJointGoalCallback(const ovis_msgs::OvisJointGoal::ConstPtr& msg)
+void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg)
 {
   trajectory_point.Position.Actuators.Actuator1 = 0;
   trajectory_point.Position.Actuators.Actuator2 = 0;
@@ -196,27 +196,12 @@ void OvisJointGoalCallback(const ovis_msgs::OvisJointGoal::ConstPtr& msg)
   sendBasicTrajectory(trajectory_point);
 }
 
-bool HomeJointCallback(ovis_msgs::HomeJointRequest& request, ovis_msgs::HomeJointResponse& response)
+bool HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
-  // TODO When call put back the arm in it's resting position & add button for it ????
-  response.home_joint_positions.resize(6);
-  response.home_joint_positions.at(0) = 111.4451;
-  response.home_joint_positions.at(1) = 10.5468;
-  response.home_joint_positions.at(2) = 89.9120;
-  response.home_joint_positions.at(3) = 153.5546;
-  response.home_joint_positions.at(4) = 176.5507;
-  response.home_joint_positions.at(5) = 121.2007;
-
-  response.current_joint_positions.resize(6);
-  response.current_joint_positions.at(0) = home_trajectory_point.Position.Actuators.Actuator1;
-  response.current_joint_positions.at(1) = home_trajectory_point.Position.Actuators.Actuator2;
-  response.current_joint_positions.at(2) = home_trajectory_point.Position.Actuators.Actuator3;
-  response.current_joint_positions.at(3) = home_trajectory_point.Position.Actuators.Actuator4;
-  response.current_joint_positions.at(4) = home_trajectory_point.Position.Actuators.Actuator5;
-  response.current_joint_positions.at(5) = home_trajectory_point.Position.Actuators.Actuator6;
+  sendBasicTrajectory(home_trajectory_point);
+  res.message = "Send home position to actuators";
+  res.success = static_cast<unsigned char>(true);
   return true;
-
-  // TODO Block until the joint are at the right position
 }
 
 int main(int argc, char** argv)
@@ -234,18 +219,62 @@ int main(int argc, char** argv)
   }
 
   getAngularPosition(joints_angles);
-  if (nh.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
-  {
-    ROS_ERROR("Missing number_of_degree_per_sec parameter");
-  }
 
   trajectory_point.InitStruct();
   trajectory_point.Position.Type = ANGULAR_VELOCITY;
   trajectory_point.Position.Delay = 0.0;
   trajectory_point.Position.Actuators = joints_angles.Actuators;
 
-  ros::ServiceServer home_srv = nh.advertiseService("arm/home_joint_positions", HomeJointCallback);
-  ros::Subscriber joint_goal_sub = nh.subscribe<ovis_msgs::OvisJointGoal>("arm/joint_goal", 1, OvisJointGoalCallback);
+  home_trajectory_point.InitStruct();
+  home_trajectory_point.Position.Type = ANGULAR_POSITION;
+  home_trajectory_point.Position.Delay = 0.0;
+
+  if (nh.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
+  {
+    ROS_ERROR("Missing param number_of_degree_per_sec parameter");
+    ros::shutdown();
+  }
+
+  if (nh.getParam("/ovis/arm/home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) == false)
+  {
+    ROS_ERROR("Missing param home position for actuator 1");
+    ros::shutdown();
+  }
+
+  if (nh.getParam("/ovis/arm/home_position_actuator2", home_trajectory_point.Position.Actuators.Actuator2) == false)
+  {
+    ROS_ERROR("Missing param home position for actuator 2");
+    ros::shutdown();
+  }
+
+  if (nh.getParam("/ovis/arm/home_position_actuator3", home_trajectory_point.Position.Actuators.Actuator3) == false)
+  {
+    ROS_ERROR("Missing param home position for actuator 3");
+    ros::shutdown();
+  }
+
+  if (nh.getParam("/ovis/arm/home_position_actuator4", home_trajectory_point.Position.Actuators.Actuator4) == false)
+  {
+    ROS_ERROR("Missing param home position for actuator 4");
+    ros::shutdown();
+  }
+
+  if (nh.getParam("/ovis/arm/home_position_actuator5", home_trajectory_point.Position.Actuators.Actuator5) == false)
+  {
+    ROS_ERROR("Missing param home position for actuator 5");
+    ros::shutdown();
+  }
+
+  if (nh.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) == false)
+  {
+    ROS_ERROR("Missing param home position for actuator 6");
+    ros::shutdown();
+  }
+
+  ros::ServiceServer home_srv = nh.advertiseService("arm/home_joint_positions", HomePositionSrvCallback);
+  ros::Subscriber joint_goal_sub =
+      nh.subscribe<ovis_msgs::OvisArmJointVelocity>("arm/joint_goal", 1, OvisArmJointVelocityCallback);
+      
   ros::spin();
 
   return 0;

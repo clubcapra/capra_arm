@@ -18,13 +18,7 @@ add_message_files(
   FILES
   OvisIKGoal.msg
   OvisJointAngles.msg
-  OvisJointGoal.msg
-)
-
-# Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  HomeJoint.srv
+  OvisArmJointVelocity.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
