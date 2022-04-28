@@ -2,7 +2,24 @@
 #define OVIS_ARM_H
 
 #include "Kinova.API.UsbCommandLayerUbuntu.h"
+#include "Kinova.API.EthCommandLayerUbuntu.h"
 #include "KinovaTypes.h"
+
+int (*ethernet_initAPI)(void);
+int (*ethernet_getAPIVersion)(int[API_VERSION_COUNT]);
+int (*ethernet_refresDevicesList)(void);
+int (*ethernet_getDevices)(KinovaDevice[MAX_KINOVA_DEVICE], int&);
+int (*ethernet_setActiveDevice)(KinovaDevice);
+int (*ethernet_getGeneralInformations)(GeneralInformations&);
+int (*ethernet_setClientConfigurations)(ClientConfigurations);
+int (*ethernet_getQuickStatus)(QuickStatus&);
+
+int (*ethernet_getAngularPosition)(AngularPosition&);
+int (*ethernet_setAngularControl)();
+int (*ethernet_sendAdvanceTrajectory)(TrajectoryPoint);
+int (*ethernet_sendBasicTrajectory)(TrajectoryPoint command);
+int (*ethernet_setEthernetConfiguration)(EthernetCommConfig & config);
+
 
 int (*initAPI)(void);
 int (*getAPIVersion)(int[API_VERSION_COUNT]);
