@@ -1,4 +1,6 @@
 #include "ovis_arm.hpp"
+#include "KinovaTypes.h"
+#include <arpa/inet.h>
 
 #include "ovis_msgs/OvisArmJointVelocity.h"
 #include "ovis_msgs/OvisIKGoal.h"
@@ -48,8 +50,8 @@ int loadUsbLibraries()
 
 int loadEthernetLibraries()
 {
-  API_comm_lib = dlopen("EthCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
-  if (API_comm_lib == NULL)
+  API_command_lib = dlopen("EthCommandLayerUbuntu.so", RTLD_NOW | RTLD_GLOBAL);
+  if (API_command_lib == NULL)
   {
     ROS_FATAL("%s", dlerror());
     return 0;
@@ -65,9 +67,20 @@ int loadEthernetLibraries()
   return 1;
 }
 
+// void* initCommandLayerFunction(const char* name)
+// {
+//   void* function_pointer = dlsym(API_command_lib, name);
+//   assert(function_pointer != NULL);
+//   return function_pointer;
+// }
+
 void* initCommandLayerFunction(const char* name)
 {
-  void* function_pointer = dlsym(API_command_lib, name);
+  char functionName[100];
+  strcpy(functionName, "Ethernet_");
+  strcat(functionName, name);
+  ROS_INFO("functionName = %s", functionName);
+  void* function_pointer = dlsym(API_command_lib, functionName);
   assert(function_pointer != NULL);
   return function_pointer;
 }
@@ -183,130 +196,6 @@ void InitUSBAPIKinova()
   }
 }
 
-void InitEthernetAPIKinova()
-{
-  if (loadEthernetLibraries() == 0)
-  {
-    ros::shutdown();
-  }
-  else
-  {
-    ROS_INFO("loading libraries successful");
-  }
-
-  int result = NO_ERROR_KINOVA;
-  std::string serial_number = "not_set";
-
-  EthernetCommConfig ethernet_settings;
-  std::string local_IP, subnet_mask;
-  int local_cmd_port, local_bcast_port;
-  // Get Param
-
-  ethernet_initAPI = (int (*)())initCommandLayerFunction("Ethernet_InitAPI");
-  ethernet_getAPIVersion = (int (*)(int[API_VERSION_COUNT]))initCommandLayerFunction("Ethernet_GetAPIVersion");
-  ethernet_getDevices = (int (*)(KinovaDevice[MAX_KINOVA_DEVICE], int&))initCommandLayerFunction("Ethernet_GetDevices");
-  ethernet_refresDevicesList = (int (*)())initCommandLayerFunction("Ethernet_RefresDevicesList");
-  ethernet_setActiveDevice = (int (*)(KinovaDevice))initCommandLayerFunction("Ethernet_SetActiveDevice");
-  ethernet_getGeneralInformations = (int (*)(GeneralInformations&))initCommandLayerFunction("Ethernet_"
-                                                                                            "GetGeneralInformations");
-  ethernet_setClientConfigurations = (int (*)(ClientConfigurations))initCommandLayerFunction("Ethernet_"
-                                                                                             "SetClientConfigurations");
-  ethernet_getQuickStatus = (int (*)(QuickStatus&))initCommandLayerFunction("Ethernet_GetQuickStatus");
-  ethernet_setEthernetConfiguration = (int (*)(EthernetCommConfig&))initCommandLayerFunction("Ethernet_"
-                                                                                             "SetEthernetConfiguratio"
-                                                                                             "n");
-
-  ethernet_getAngularPosition = (int (*)(AngularPosition&))initCommandLayerFunction("Ethernet_GetAngularPosition");
-  ethernet_setAngularControl = (int (*)())initCommandLayerFunction("Ethernet_SetAngularControl");
-  ethernet_sendAdvanceTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("Ethernet_SendAdvanceTrajectory");
-  ethernet_sendBasicTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("Ethernet_SendBasicTrajectory");
-
-  int api_version[API_VERSION_COUNT];
-  result = ethernet_getAPIVersion(api_version);
-
-  // Do SetEthernetConfiguration with EthernetCommConfig setting
-
-  if (result != NO_ERROR_KINOVA)
-  {
-    ROS_ERROR("Could not get the Kinova API version. Result = [%d]", result);
-  }
-
-  ROS_INFO_STREAM("Initializing Kinova USB API (header version: " << COMMAND_LAYER_VERSION
-                                                                  << ", library version: " << api_version[0] << "."
-                                                                  << api_version[1] << "." << api_version[2] << ")");
-
-  result = ethernet_initAPI();
-
-  if (result != NO_ERROR_KINOVA)
-  {
-    ROS_ERROR("Could not initialize Kinova API. Result = [%d]", result);
-  }
-
-  result = ethernet_refresDevicesList();
-
-  if (result != NO_ERROR_KINOVA)
-  {
-    ROS_ERROR("Could not refresh the devices list. Result = [%d]", result);
-  }
-
-  result = NO_ERROR_KINOVA;
-  int devices_count = ethernet_getDevices(devices_list_, result);
-
-  if (result != NO_ERROR_KINOVA)
-  {
-    ROS_ERROR("Could not get the devices list. Result = [%d]", result);
-  }
-
-  bool found_arm = false;
-  for (int device_i = 0; device_i < devices_count; device_i++)
-  {
-    // If no device is specified, just use the first available device
-    if (serial_number == "" || serial_number == "not_set" ||
-        std::strcmp(serial_number.c_str(), devices_list_[device_i].SerialNumber) == 0)
-    {
-      result = ethernet_setActiveDevice(devices_list_[device_i]);
-      if (result != NO_ERROR_KINOVA)
-      {
-        ROS_ERROR("Could not set the active device. Result [%d]", result);
-      }
-
-      GeneralInformations general_info;
-      result = ethernet_getGeneralInformations(general_info);
-      if (result != NO_ERROR_KINOVA)
-      {
-        ROS_ERROR("Could not get general information about the device. Result [%d]", result);
-      }
-
-      ClientConfigurations configuration;
-      ethernet_setClientConfigurations(configuration);
-      strncpy(configuration.Model, "Custom", strlen("Custom") + 1);
-
-      QuickStatus quick_status;
-      ethernet_getQuickStatus(quick_status);
-
-      robot_type = quick_status.RobotType;
-
-      ROS_INFO_STREAM("Found " << devices_count << " device(s), using device at index " << device_i << " (model: "
-                               << configuration.Model << ", serial number: " << devices_list_[device_i].SerialNumber
-                               << ", code version: " << general_info.CodeVersion
-                               << ", code revision: " << general_info.CodeRevision << ")");
-
-      found_arm = true;
-      if (found_arm)
-      {
-        break;
-      }
-    }
-  }
-
-  if (!found_arm)
-  {
-    ROS_ERROR("Could not find the specified arm (serial: %s) among the %d attached devices", serial_number.c_str(),
-              devices_count);
-    ROS_ERROR("Could not find the specified arm");
-  }
-}
-
 void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg)
 {
   trajectory_point.Position.Actuators.Actuator1 = 0;
@@ -354,7 +243,8 @@ int main(int argc, char** argv)
   try
   {
     // InitUSBAPIKinova();
-    InitEthernetAPIKinova();
+    // InitEthernetAPIKinova(nh);
+    // TestAPIKinova(nh);
   }
   catch (const std::exception& exception)
   {

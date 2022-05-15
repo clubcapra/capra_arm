@@ -24,7 +24,12 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(arm src/ovis_arm.cpp include/ovis_arm.hpp include/kinova/Kinova.API.USBCommandLayerUbuntu.h include/kinova)
+add_executable(arm 
+  src/ovis_arm.cpp
+  include/ovis_arm.hpp 
+  include/kinova/Kinova.API.USBCommandLayerUbuntu.h
+  include/kinova/Kinova.API.EthCommandLayerUbuntu.h 
+  include/kinova/KinovaTypes.h)
 
 add_dependencies(arm ${catkin_EXPORTED_TARGETS})
 
