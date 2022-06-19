@@ -173,8 +173,7 @@ public:
   int SetRedundancyResolutionToleastSquares(int state);
 
   // %EndTag(Cartesian Control)%
-  // TODO sendBasicTrajectory
-  void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
+  void SendBasicTrajectory(TrajectoryPoint& trajectory_point);
 
 private:
   boost::recursive_mutex& api_mutex_;

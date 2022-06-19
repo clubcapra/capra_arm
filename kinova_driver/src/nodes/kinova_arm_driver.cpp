@@ -13,46 +13,6 @@
 #include "kinova_driver/kinova_fingers_action.h"
 #include "kinova_driver/kinova_joint_trajectory_controller.h"
 
-// void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg)
-// {
-//   trajectory_point.Position.Actuators.Actuator1 = 0;
-//   trajectory_point.Position.Actuators.Actuator2 = 0;
-//   trajectory_point.Position.Actuators.Actuator3 = 0;
-//   trajectory_point.Position.Actuators.Actuator4 = 0;
-//   trajectory_point.Position.Actuators.Actuator5 = 0;
-//   trajectory_point.Position.Actuators.Actuator6 = 0;
-//   switch (msg->joint_index)
-//   {
-//     case 0:
-//       trajectory_point.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
-//       break;
-//     case 1:
-//       trajectory_point.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
-//       break;
-//     case 2:
-//       trajectory_point.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
-//       break;
-//     case 3:
-//       trajectory_point.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
-//       break;
-//     case 4:
-//       trajectory_point.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
-//       break;
-//     case 5:
-//       trajectory_point.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
-//       break;
-//   }
-//   // sendBasicTrajectory(trajectory_point); TODO
-// }
-
-// bool HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
-// {
-//   // sendBasicTrajectory(home_trajectory_point); TODO
-//   res.message = "Send home position to actuators";
-//   res.success = static_cast<unsigned char>(true);
-//   return true;
-// }
-
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "kinova_arm_driver");
@@ -85,8 +45,6 @@ int main(int argc, char** argv)
     try
     {
       // ros::ServiceServer home_srv = nh.advertiseService("arm/home_joint_positions", HomePositionSrvCallback);
-      // ros::Subscriber joint_goal_sub =
-      //     nh.subscribe<ovis_msgs::OvisArmJointVelocity>("arm/joint_goal", 1, OvisArmJointVelocityCallback);
       kinova::KinovaComm comm(nh, api_mutex, is_first_init, kinova_robotType);
       kinova::KinovaArm kinova_arm(comm, nh, kinova_robotType, kinova_robotName);
       kinova::KinovaPoseActionServer pose_server(comm, nh, kinova_robotType, kinova_robotName);

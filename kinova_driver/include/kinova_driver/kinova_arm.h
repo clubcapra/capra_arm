@@ -50,7 +50,7 @@
 #include "kinova_driver/kinova_api.h"
 
 // #include <std_srvs/Trigger.h>
-// #include "ovis_msgs/OvisArmJointVelocity.h"
+#include "ovis_msgs/OvisArmJointVelocity.h"
 
 namespace kinova
 {
@@ -78,7 +78,7 @@ public:
       const kinova_msgs::PoseVelocityWithFingerVelocityConstPtr& cartesian_vel_with_fingers);
   void jointTorqueSubscriberCallback(const kinova_msgs::JointTorqueConstPtr& joint_torque);
   void forceSubscriberCallback(const kinova_msgs::CartesianForceConstPtr& force);
-//   void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
+  //   void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
 
   // Service callbacks -----------------------------------------------------------
   bool stopServiceCallback(kinova_msgs::Stop::Request& req, kinova_msgs::Stop::Response& res);
@@ -107,9 +107,11 @@ public:
   bool setJointTorquesToZeroService(kinova_msgs::ZeroTorques::Request& req, kinova_msgs::ZeroTorques::Response& res);
   bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request& req,
                                         kinova_msgs::RunCOMParametersEstimation::Response& res);
-//   bool HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+  void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
 
-private : 
+  //   bool HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+
+private:
   void positionTimer(const ros::TimerEvent&);
   void cartesianVelocityTimer(const ros::TimerEvent&);
   void jointVelocityTimer(const ros::TimerEvent&);

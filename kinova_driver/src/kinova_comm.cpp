@@ -207,56 +207,6 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
     ROS_WARN("Movement on connection to the arm has been suppressed on initialization. You may "
              "have to home the arm (through the home service) before movement is possible");
   }
-
-  trajectory_point.InitStruct();
-  trajectory_point.Position.Type = ANGULAR_VELOCITY;
-  trajectory_point.Position.Delay = 0.0;
-
-  home_trajectory_point.InitStruct();
-  home_trajectory_point.Position.Type = ANGULAR_POSITION;
-  home_trajectory_point.Position.Delay = 0.0;
-
-  if (node_handle.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
-  {
-    ROS_ERROR("Missing param number_of_degree_per_sec parameter");
-    ros::shutdown();
-  }
-
-  if (node_handle.getParam("/ovis/arm/home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) == false)
-  {
-    ROS_ERROR("Missing param home position for actuator 1");
-    ros::shutdown();
-  }
-
-  if (node_handle.getParam("/ovis/arm/home_position_actuator2", home_trajectory_point.Position.Actuators.Actuator2) == false)
-  {
-    ROS_ERROR("Missing param home position for actuator 2");
-    ros::shutdown();
-  }
-
-  if (node_handle.getParam("/ovis/arm/home_position_actuator3", home_trajectory_point.Position.Actuators.Actuator3) == false)
-  {
-    ROS_ERROR("Missing param home position for actuator 3");
-    ros::shutdown();
-  }
-
-  if (node_handle.getParam("/ovis/arm/home_position_actuator4", home_trajectory_point.Position.Actuators.Actuator4) == false)
-  {
-    ROS_ERROR("Missing param home position for actuator 4");
-    ros::shutdown();
-  }
-
-  if (node_handle.getParam("/ovis/arm/home_position_actuator5", home_trajectory_point.Position.Actuators.Actuator5) == false)
-  {
-    ROS_ERROR("Missing param home position for actuator 5");
-    ros::shutdown();
-  }
-
-  if (node_handle.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) == false)
-  {
-    ROS_ERROR("Missing param home position for actuator 6");
-    ros::shutdown();
-  }
 }
 
 KinovaComm::~KinovaComm()
@@ -632,57 +582,31 @@ void KinovaComm::setJointAngles(const KinovaAngles& angles, double speedJoint123
   }
 }
 
-void KinovaComm::OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg)
+void KinovaComm::SendBasicTrajectory(TrajectoryPoint& trajectory_point)
 {
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
 
-  if (isStopped())
+  TrajectoryPoint kinova_velocity;
+  kinova_velocity.InitStruct();
+  startAPI();
+  kinova_velocity.Position.Type = ANGULAR_VELOCITY;
+
+  // confusingly, velocity is passed in the position struct
+  kinova_velocity.Position.Actuators.Actuator1 = 0;
+  kinova_velocity.Position.Actuators.Actuator2 = 0;
+  kinova_velocity.Position.Actuators.Actuator3 = 5;
+  kinova_velocity.Position.Actuators.Actuator4 = 0;
+  kinova_velocity.Position.Actuators.Actuator5 = 0;
+  kinova_velocity.Position.Actuators.Actuator6 = 0;
+
+  for (size_t i = 0; i < 100; i++)
   {
-    ROS_WARN_STREAM("In class [" << typeid(*this).name() << "], function [" << __FUNCTION__
-                                 << "]: The command could not be send because the arm is stopped" << std::endl);
-    return;
-  }
-
-  int result = NO_ERROR_KINOVA;
-  TrajectoryPoint trajectory_point;
-  trajectory_point.InitStruct();
-  memset(&trajectory_point, 0, sizeof(trajectory_point));
-
-  trajectory_point.Position.Type = ANGULAR_VELOCITY;
-  trajectory_point.Position.Delay = 0.0;
-
-  trajectory_point.Position.Actuators.Actuator1 = 0;
-  trajectory_point.Position.Actuators.Actuator2 = 0;
-  trajectory_point.Position.Actuators.Actuator3 = 0;
-  trajectory_point.Position.Actuators.Actuator4 = 0;
-  trajectory_point.Position.Actuators.Actuator5 = 0;
-  trajectory_point.Position.Actuators.Actuator6 = 0;
-  switch (msg->joint_index)
-  {
-    case 0:
-      trajectory_point.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
-      break;
-    case 1:
-      trajectory_point.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
-      break;
-    case 2:
-      trajectory_point.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
-      break;
-    case 3:
-      trajectory_point.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
-      break;
-    case 4:
-      trajectory_point.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
-      break;
-    case 5:
-      trajectory_point.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
-      break;
-  }
-
-  result = kinova_api_.sendAdvanceTrajectory(trajectory_point);
-  if (result != NO_ERROR_KINOVA)
-  {
-    throw KinovaCommException("Could not send advanced joint velocity trajectory", result);
+    int result = kinova_api_.sendAdvanceTrajectory(kinova_velocity);
+    ROS_INFO("result = %d", result);
+    if (result != NO_ERROR_KINOVA)
+    {
+      throw KinovaCommException("Could not send advanced joint velocity trajectory", result);
+    }
   }
 }
 
@@ -725,11 +649,11 @@ void KinovaComm::setJointVelocities(const AngularInfo& joint_vel)
 {
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
 
-  if (isStopped())
-  {
-    ROS_INFO("The velocities could not be set because the arm is stopped");
-    return;
-  }
+  // if (isStopped())
+  // {
+  // ROS_INFO("The velocities could not be set because the arm is stopped");
+  // return;
+  // }
 
   TrajectoryPoint kinova_velocity;
   kinova_velocity.InitStruct();
@@ -743,6 +667,7 @@ void KinovaComm::setJointVelocities(const AngularInfo& joint_vel)
   kinova_velocity.Position.Actuators = joint_vel;
 
   int result = kinova_api_.sendAdvanceTrajectory(kinova_velocity);
+  ROS_INFO("result = %d", result);
   if (result != NO_ERROR_KINOVA)
   {
     throw KinovaCommException("Could not send advanced joint velocity trajectory", result);
