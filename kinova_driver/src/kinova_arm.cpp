@@ -198,8 +198,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
       node_handle_.advertiseService("in/set_torque_control_mode", &KinovaArm::setTorqueControlModeService, this);
   set_torque_control_parameters_service_ = node_handle_.advertiseService(
       "in/set_torque_control_parameters", &KinovaArm::setTorqueControlParametersService, this);
-  //   ovis_home_service = node_handle_.advertiseService("home_joint_positions", &KinovaArm::HomePositionSrvCallback,
-  //   this);
+  ovis_home_service_ = node_handle_.advertiseService("home_joint_positions", &KinovaArm::HomePositionSrvCallback, this);
 
   /* Set up Publishers */
   joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_angles", 2);
@@ -426,36 +425,42 @@ void KinovaArm::forceSubscriberCallback(const kinova_msgs::CartesianForceConstPt
 
 void KinovaArm::OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg)
 {
-  // this->trajectory_point.Position.Actuators.Actuator1 = 0;
-  // this->trajectory_point.Position.Actuators.Actuator2 = 0;
-  // this->trajectory_point.Position.Actuators.Actuator3 = 10;
-  // this->trajectory_point.Position.Actuators.Actuator4 = 0;
-  // this->trajectory_point.Position.Actuators.Actuator5 = 0;
-  // this->trajectory_point.Position.Actuators.Actuator6 = 0;
-  // // switch (msg->joint_index)
-  // // {
-  // //   case 0:
-  // //     trajectory_point.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
-  // //     break;
-  // //   case 1:
-  // //     trajectory_point.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
-  // //     break;
-  // //   case 2:
-  // //     trajectory_point.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
-  // //     break;
-  // //   case 3:
-  // //     trajectory_point.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
-  // //     break;
-  // //   case 4:
-  // //     trajectory_point.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
-  // //     break;
-  // //   case 5:
-  // //     trajectory_point.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
-  // //     break;
-  // // }
-  // ROS_INFO("TEST 1");
-  // kinova_comm_.setJointVelocities(trajectory_point.Position.Actuators);
-  kinova_comm_.SendBasicTrajectory(trajectory_point);
+  this->trajectory_point.Position.Actuators.Actuator1 = 0;
+  this->trajectory_point.Position.Actuators.Actuator2 = 0;
+  this->trajectory_point.Position.Actuators.Actuator3 = 0;
+  this->trajectory_point.Position.Actuators.Actuator4 = 0;
+  this->trajectory_point.Position.Actuators.Actuator5 = 0;
+  this->trajectory_point.Position.Actuators.Actuator6 = 0;
+  switch (msg->joint_index)
+  {
+    case 0:
+      trajectory_point.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
+      break;
+    case 1:
+      trajectory_point.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
+      break;
+    case 2:
+      trajectory_point.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
+      break;
+    case 3:
+      trajectory_point.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
+      break;
+    case 4:
+      trajectory_point.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
+      break;
+    case 5:
+      trajectory_point.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
+      break;
+  }
+  kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point);
+}
+
+bool KinovaArm::HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
+{
+  kinova_comm_.SendBasicTrajectoryPosition(home_trajectory_point);
+  res.message = "successfully send home position";
+  res.success = static_cast<unsigned char>(true);
+  return true;
 }
 
 /*!

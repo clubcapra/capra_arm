@@ -173,7 +173,9 @@ public:
   int SetRedundancyResolutionToleastSquares(int state);
 
   // %EndTag(Cartesian Control)%
-  void SendBasicTrajectory(TrajectoryPoint& trajectory_point);
+  void SendBasicTrajectoryVelocity(TrajectoryPoint& trajectory_point);
+  void SendBasicTrajectoryPosition(TrajectoryPoint& trajectory_point);
+
 
 private:
   boost::recursive_mutex& api_mutex_;
@@ -187,6 +189,7 @@ private:
   int number_of_degree_per_sec = 0;
   TrajectoryPoint trajectory_point;
   TrajectoryPoint home_trajectory_point;
+  int loop_per_command = 0;
   int const INVERSE = -1;
 };
 

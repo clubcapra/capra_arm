@@ -193,11 +193,6 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
   // Set torque safety factor to 1
   kinova_api_.setTorqueSafetyFactor(1);
 
-  // Set the angular velocity of each of the joints to zero
-  TrajectoryPoint kinova_velocity;
-  memset(&kinova_velocity, 0, sizeof(kinova_velocity));
-  setCartesianVelocities(kinova_velocity.Position.CartesianPosition);
-
   if (is_movement_on_start)
   {
     initFingers();
@@ -207,6 +202,19 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
     ROS_WARN("Movement on connection to the arm has been suppressed on initialization. You may "
              "have to home the arm (through the home service) before movement is possible");
   }
+
+  // Set the angular velocity of each of the joints to zero
+  TrajectoryPoint kinova_velocity;
+  memset(&kinova_velocity, 0, sizeof(kinova_velocity));
+  setCartesianVelocities(kinova_velocity.Position.CartesianPosition);
+
+  if (node_handle.getParam("/ovis/arm/loop_per_command", loop_per_command) == false)
+  {
+    ROS_ERROR("Missing loop_per_command");
+    ros::shutdown();
+  }
+
+  
 }
 
 KinovaComm::~KinovaComm()
@@ -582,7 +590,7 @@ void KinovaComm::setJointAngles(const KinovaAngles& angles, double speedJoint123
   }
 }
 
-void KinovaComm::SendBasicTrajectory(TrajectoryPoint& trajectory_point)
+void KinovaComm::SendBasicTrajectoryVelocity(TrajectoryPoint& trajectory_point)
 {
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
 
@@ -590,23 +598,32 @@ void KinovaComm::SendBasicTrajectory(TrajectoryPoint& trajectory_point)
   kinova_velocity.InitStruct();
   startAPI();
   kinova_velocity.Position.Type = ANGULAR_VELOCITY;
+  kinova_velocity.Position.Actuators = trajectory_point.Position.Actuators;
 
-  // confusingly, velocity is passed in the position struct
-  kinova_velocity.Position.Actuators.Actuator1 = 0;
-  kinova_velocity.Position.Actuators.Actuator2 = 0;
-  kinova_velocity.Position.Actuators.Actuator3 = 5;
-  kinova_velocity.Position.Actuators.Actuator4 = 0;
-  kinova_velocity.Position.Actuators.Actuator5 = 0;
-  kinova_velocity.Position.Actuators.Actuator6 = 0;
-
-  for (size_t i = 0; i < 100; i++)
+  for (size_t i = 0; i < loop_per_command; i++)
   {
-    int result = kinova_api_.sendAdvanceTrajectory(kinova_velocity);
-    ROS_INFO("result = %d", result);
+    int result = kinova_api_.sendAdvanceTrajectory(trajectory_point);
     if (result != NO_ERROR_KINOVA)
     {
       throw KinovaCommException("Could not send advanced joint velocity trajectory", result);
     }
+  }
+}
+
+void KinovaComm::SendBasicTrajectoryPosition(TrajectoryPoint& trajectory_point)
+{
+  boost::recursive_mutex::scoped_lock lock(api_mutex_);
+
+  TrajectoryPoint kinova_velocity;
+  kinova_velocity.InitStruct();
+  startAPI();
+  kinova_velocity.Position.Type = ANGULAR_POSITION;
+  kinova_velocity.Position.Actuators = trajectory_point.Position.Actuators;
+
+  int result = kinova_api_.sendAdvanceTrajectory(trajectory_point);
+  if (result != NO_ERROR_KINOVA)
+  {
+    throw KinovaCommException("Could not send advanced joint velocity trajectory", result);
   }
 }
 

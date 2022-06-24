@@ -93,6 +93,7 @@ public:
 
   bool setEndEffectorOffsetCallback(kinova_msgs::SetEndEffectorOffset::Request& req,
                                     kinova_msgs::SetEndEffectorOffset::Response& res);
+  bool HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
 
   // Torque control
   bool setForceControlParamsCallback(kinova_msgs::SetForceControlParams::Request& req,
