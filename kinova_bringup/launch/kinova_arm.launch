@@ -16,12 +16,12 @@
     <param name="status_interval_seconds" value="$(arg feedback_publish_rate)" />
     <param name="number_of_degree_per_sec" value="5" />
     <param name="loop_per_command" value="50" />
-    <param name="home_position_actuator1" value="16.082716" />
-    <param name="home_position_actuator2" value="3.400684" />
-    <param name="home_position_actuator3" value="92.714165" />
-    <param name="home_position_actuator4" value="331.962769" />
-    <param name="home_position_actuator5" value="178.148285" />
-    <param name="home_position_actuator6" value="302.079529" />
+    <param name="home_position_actuator1" value="16.312500" />
+    <param name="home_position_actuator2" value="3.140625" />
+    <param name="home_position_actuator3" value="89.953125" />
+    <param name="home_position_actuator4" value="331.909088" />
+    <param name="home_position_actuator5" value="184.227280" />
+    <param name="home_position_actuator6" value="301.977295" />
   </node>
 
 </launch>
