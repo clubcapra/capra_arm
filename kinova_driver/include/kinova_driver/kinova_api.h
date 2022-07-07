@@ -226,6 +226,8 @@ public:
     int (*getTrajectoryTorqueMode)(int &);
     int (*setTorqueInactivityType)(int);
 
+    int (*setJointZero)(int);
+
     // %EndTag(experimental)%
 
   private:
