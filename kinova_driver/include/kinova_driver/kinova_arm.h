@@ -78,7 +78,6 @@ public:
       const kinova_msgs::PoseVelocityWithFingerVelocityConstPtr& cartesian_vel_with_fingers);
   void jointTorqueSubscriberCallback(const kinova_msgs::JointTorqueConstPtr& joint_torque);
   void forceSubscriberCallback(const kinova_msgs::CartesianForceConstPtr& force);
-  //   void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
 
   // Service callbacks -----------------------------------------------------------
   bool stopServiceCallback(kinova_msgs::Stop::Request& req, kinova_msgs::Stop::Response& res);
@@ -109,8 +108,6 @@ public:
   bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request& req,
                                         kinova_msgs::RunCOMParametersEstimation::Response& res);
   void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
-
-  //   bool HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
 
 private:
   void positionTimer(const ros::TimerEvent&);

@@ -214,7 +214,6 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
     ros::shutdown();
   }
 
-  
 }
 
 KinovaComm::~KinovaComm()

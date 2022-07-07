@@ -294,16 +294,6 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
     ROS_ERROR("Missing param home position for actuator 6");
     ros::shutdown();
   }
-
-  AngularPosition test;
-  kinova_comm_.getAngularCommand(test);
-
-  ROS_INFO("test.Actuators.Actuator1 = [%f]", test.Actuators.Actuator1);
-  ROS_INFO("test.Actuators.Actuator2 = [%f]", test.Actuators.Actuator2);
-  ROS_INFO("test.Actuators.Actuator3 = [%f]", test.Actuators.Actuator3);
-  ROS_INFO("test.Actuators.Actuator4 = [%f]", test.Actuators.Actuator4);
-  ROS_INFO("test.Actuators.Actuator5 = [%f]", test.Actuators.Actuator5);
-  ROS_INFO("test.Actuators.Actuator6 = [%f]", test.Actuators.Actuator6);
 }
 
 KinovaArm::~KinovaArm()
