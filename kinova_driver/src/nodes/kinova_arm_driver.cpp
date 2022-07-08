@@ -44,7 +44,6 @@ int main(int argc, char** argv)
   {
     try
     {
-      // ros::ServiceServer home_srv = nh.advertiseService("arm/home_joint_positions", HomePositionSrvCallback);
       kinova::KinovaComm comm(nh, api_mutex, is_first_init, kinova_robotType);
       kinova::KinovaArm kinova_arm(comm, nh, kinova_robotType, kinova_robotName);
       kinova::KinovaPoseActionServer pose_server(comm, nh, kinova_robotType, kinova_robotName);
