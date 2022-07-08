@@ -50,7 +50,8 @@
 #include "kinova_driver/kinova_api.h"
 
 // #include <std_srvs/Trigger.h>
-#include "ovis_msgs/OvisArmJointVelocity.h"
+#include "ovis_msgs/OvisJointVelocity.h"
+#include "ovis_msgs/OvisJointAngle.h"
 
 namespace kinova
 {
@@ -107,7 +108,8 @@ public:
   bool setJointTorquesToZeroService(kinova_msgs::ZeroTorques::Request& req, kinova_msgs::ZeroTorques::Response& res);
   bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request& req,
                                         kinova_msgs::RunCOMParametersEstimation::Response& res);
-  void OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg);
+  void OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg);
+  void OvisJointAngleCallback(const ovis_msgs::OvisJointAngle::ConstPtr& msg);
 
 private:
   void positionTimer(const ros::TimerEvent&);
@@ -131,7 +133,8 @@ private:
   ros::Subscriber cartesian_velocity_with_finger_velocity_subscriber_;
   ros::Subscriber joint_torque_subscriber_;
   ros::Subscriber cartesian_force_subscriber_;
-  ros::Subscriber ovis_joint_goal_subscriber_;
+  ros::Subscriber ovis_joint_velocity_goal_subscriber_;
+  ros::Subscriber ovis_joint_angle_goal_subscriber_;
 
   ros::Publisher joint_angles_publisher_;
   ros::Publisher tool_position_publisher_;

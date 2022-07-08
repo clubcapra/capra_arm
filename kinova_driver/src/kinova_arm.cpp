@@ -224,8 +224,10 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
       node_handle_.subscribe("in/joint_torque", 1, &KinovaArm::jointTorqueSubscriberCallback, this);
   cartesian_force_subscriber_ =
       node_handle_.subscribe("in/cartesian_force", 1, &KinovaArm::forceSubscriberCallback, this);
-  ovis_joint_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisArmJointVelocity>(
-      "joint_goal", 1, &KinovaArm::OvisArmJointVelocityCallback, this);
+  ovis_joint_velocity_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointVelocity>(
+      "joint_velocity_goal", 1, &KinovaArm::OvisJointVelocityCallback, this);
+  ovis_joint_angle_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointAngle>(
+      "joint_angle_goal", 1, &KinovaArm::OvisJointAngleCallback, this);
 
   node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 
@@ -423,7 +425,7 @@ void KinovaArm::forceSubscriberCallback(const kinova_msgs::CartesianForceConstPt
   }
 }
 
-void KinovaArm::OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVelocity::ConstPtr& msg)
+void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg)
 {
   this->trajectory_point.Position.Actuators.Actuator1 = 0;
   this->trajectory_point.Position.Actuators.Actuator2 = 0;
@@ -453,6 +455,18 @@ void KinovaArm::OvisArmJointVelocityCallback(const ovis_msgs::OvisArmJointVeloci
       break;
   }
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point);
+}
+
+void KinovaArm::OvisJointAngleCallback(const ovis_msgs::OvisJointAngle::ConstPtr& msg)
+{
+  this->trajectory_point.Position.Actuators.Actuator1 = msg->joint_angles[0];
+  this->trajectory_point.Position.Actuators.Actuator2 = msg->joint_angles[1];
+  this->trajectory_point.Position.Actuators.Actuator3 = msg->joint_angles[2];
+  this->trajectory_point.Position.Actuators.Actuator4 = msg->joint_angles[3];
+  this->trajectory_point.Position.Actuators.Actuator5 = msg->joint_angles[4];
+  this->trajectory_point.Position.Actuators.Actuator6 = msg->joint_angles[5];
+
+  kinova_comm_.SendBasicTrajectoryPosition(trajectory_point);
 }
 
 bool KinovaArm::HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
