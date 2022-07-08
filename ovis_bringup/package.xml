@@ -4,7 +4,7 @@
   <version>0.0.0</version>
   <description>
       The ovis_bringup package.
-      Contains launch files for interacting with variousKinova arms. 
+      Contains launch files for interacting with Ovis arm. 
   </description>
 
   <maintainer email="capra@clubcapra.com">Capra</maintainer>
