@@ -106,7 +106,6 @@ add_dependencies(kinova_driver ${catkin_EXPORTED_TARGETS})
 add_dependencies(kinova_arm_driver ${catkin_EXPORTED_TARGETS})
 add_dependencies(kinova_tf_updater ${catkin_EXPORTED_TARGETS})
 target_link_libraries(kinova_driver ${catkin_LIBRARIES} dl)
-#target_link_libraries(kinova_arm_driver ${catkin_LIBRARIES} dl)
 target_link_libraries(kinova_arm_driver ${catkin_LIBRARIES} kinova_driver)
 target_link_libraries(kinova_tf_updater ${catkin_LIBRARIES})
 
