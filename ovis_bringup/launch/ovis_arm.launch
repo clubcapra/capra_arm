@@ -1,6 +1,5 @@
 <launch>
 
-  <arg name="use_urdf" default="false" />
   <arg name="kinova_robotType" default="c2s6s000" />
   <arg name="kinova_robotName" default="arm" />
   <arg name="kinova_robotSerial" default="not_set" />
