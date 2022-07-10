@@ -5,15 +5,13 @@
 
 #include "ovis_driver.hpp"
 
-// #include "ovis_msgs/OvisJointAngles.h"
-// #include "ovis_msgs/OvisJointGoal.h"
-// #include "ovis_msgs/OvisIKGoal.h"
-// #include "ovis_msgs/HomeJoint.h"
+#include "ovis_msgs/OvisJointAngles.h"
+#include "ovis_msgs/OvisJointGoal.h"
+#include "ovis_msgs/OvisIKGoal.h"
+#include "ovis_msgs/HomeJoint.h"
 
 #include <ros/ros.h>
 #include <sensor_msgs/Joy.h>
-// #include <actionlib/client/simple_action_client.h>
-// #include <actionlib/client/simple_client_goal_state.h>
 #include <kinova_msgs/ArmJointAnglesAction.h>
 #include <Kinova.API.UsbCommandLayerUbuntu.h>
 
@@ -25,6 +23,7 @@
 
 constexpr uint8_t NUMBER_OF_JOINTS = 6;
 constexpr uint8_t NUMBER_OF_DEGREE_PER_GOAL = 1;
+// TO-DO: un ROS param pour le nombre de degre/seconde
 constexpr uint8_t NUMBER_OF_DEGREE_PER_SECOND = 20;
 
 static uint8_t joint_index;
@@ -49,186 +48,6 @@ void printDebugInfo()
 
   usleep(500000);
   return;
-}
-
-void sendJointCommand(std::vector<float> const joy_axes)
-{
-  //printDebugInfo();
-
-  // adds a deadband to joysick
-  if (joy_axes[1] < 0.1 && joy_axes[1] > -0.1)
-  {
-    return;
-  }
-
-  //  if (joy_axes[0] < 0.1 && joy_axes[0] > -0.1)
-  // {
-  //   return;
-  // }
-
-  int direction = (joy_axes[1] > 0.0) ? 1 : -1;
-  //int horizontal_direction = (joy_axes[0] > 0.0) ? 1 : -1;
-
-  int result = 0;
-  result = getAngularPosition(joints_angles);
-  if (result != NO_ERROR_KINOVA)
-  {
-    return;
-  }
-
-  int direction = (joy_axes[1] > 0.0) ? 1 : -1;
-
-  // int result = 0;
-  // result = getAngularPosition(joints_angles);
-  // if (result != NO_ERROR_KINOVA)
-  // {
-  //   ROS_ERROR("Could not get the angular position. Result = [%d]", result);
-  // }
-
-  switch (joint_index)
-  {
-    case 0:
-
-      // trajectory_point.Position.Actuators.Actuator1 += direction * NUMBER_OF_DEGREE_PER_GOAL;
-
-      trajectory_point.Position.Actuators.Actuator1 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
-      trajectory_point.Position.Actuators.Actuator2 = 0;
-      trajectory_point.Position.Actuators.Actuator3 = 0;
-      trajectory_point.Position.Actuators.Actuator4 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator6 = 0;
-
-      break;
-    case 1:
-      // trajectory_point.Position.Actuators.Actuator2 += INVERSE * direction * NUMBER_OF_DEGREE_PER_GOAL;
-
-      trajectory_point.Position.Actuators.Actuator1 = 0;
-      trajectory_point.Position.Actuators.Actuator2 = INVERSE*joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
-      trajectory_point.Position.Actuators.Actuator3 = 0;
-      trajectory_point.Position.Actuators.Actuator4 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator6 = 0;
-
-      break;
-    case 2:
-
-      // trajectory_point.Position.Actuators.Actuator3 += direction * NUMBER_OF_DEGREE_PER_GOAL;
-      trajectory_point.Position.Actuators.Actuator1 = 0;
-      trajectory_point.Position.Actuators.Actuator2 = 0;
-      trajectory_point.Position.Actuators.Actuator3 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
-      trajectory_point.Position.Actuators.Actuator4 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator6 = 0;
-      break;
-
-    case 3:
-      //  trajectory_point.Position.Actuators.Actuator4 += direction * NUMBER_OF_DEGREE_PER_GOAL;
-      trajectory_point.Position.Actuators.Actuator1 = 0;
-      trajectory_point.Position.Actuators.Actuator2 = 0;
-      trajectory_point.Position.Actuators.Actuator3 = 0;
-      trajectory_point.Position.Actuators.Actuator4 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator6 = 0;
-      break;
-    case 4:
-      //  trajectory_point.Position.Actuators.Actuator5 += direction * NUMBER_OF_DEGREE_PER_GOAL;
-      trajectory_point.Position.Actuators.Actuator1 = 0;
-      trajectory_point.Position.Actuators.Actuator2 = 0;
-      trajectory_point.Position.Actuators.Actuator3 = 0;
-      trajectory_point.Position.Actuators.Actuator4 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
-      trajectory_point.Position.Actuators.Actuator6 = 0;
-      break;
-    case 5:
-      // trajectory_point.Position.Actuators.Actuator6 += direction * NUMBER_OF_DEGREE_PER_GOAL;
-
-      trajectory_point.Position.Actuators.Actuator1 = 0;
-      trajectory_point.Position.Actuators.Actuator2 = 0;
-      trajectory_point.Position.Actuators.Actuator3 = 0;
-      trajectory_point.Position.Actuators.Actuator4 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator5 = 0;
-      trajectory_point.Position.Actuators.Actuator6 = joy_axes[1] * NUMBER_OF_DEGREE_PER_SECOND;
-      break;
-  }
-
-  //envoi la commande de velocite sur le joint tant que le joystick n'est pas en position centrale
-  do
-  {
-
-    ROS_INFO(" COMMAND SENT ON JOINT 2: [%f] \n", trajectory_point.Position.Actuators.Actuator2);
-    sendBasicTrajectory(trajectory_point);
-    usleep(1);
-
-  } while (joy_axes[1] < 0.1 && joy_axes[1] > -0.1);
-  
-  
-
-
-}
-
-bool checkButtonPressed(int const button, bool& button_pressed_value)
-{
-  bool return_value = false;
-  if (button == 1)
-  {
-    button_pressed_value = true;
-  }
-  else if (button_pressed_value == true)
-  {
-    return_value = true;
-    button_pressed_value = false;
-  }
-  else
-  {
-    return_value = false;
-  }
-  return return_value;
-}
-
-void manageJointIndex(const std::vector<int> joy_buttons)
-{
-  // Left bumper = 4 Right bumper = 5
-  if (checkButtonPressed(joy_buttons[LEFT_BUMPER_INDEX], bumper_left_pressed) == true)
-  {
-    if (joint_index > 0)
-    {
-      joint_index--;
-      ROS_INFO("Decrease joint_index to [%d]", joint_index);
-    }
-  }
-
-  if (checkButtonPressed(joy_buttons[RIGHT_BUMPER_INDEX], bumper_right_pressed))
-  {
-    if (joint_index < NUMBER_OF_JOINTS - 1)
-    {
-      joint_index++;
-      ROS_INFO("Increase joint_index to [%d]", joint_index);
-    }
-  }
-}
-
-void joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
-{
-  // acquire lock for arm moving
-  manageJointIndex(joy->buttons);
-
-  if (joy->buttons[0] == 1)  // TODO Add constant for A button
-  {
-    sendJointCommand(joy->axes);
-  }
-
-  // int direction = (joy->axes[1] > 0.0) ? 1 : -1;
-
-  // if (joy->axes[1] < 0.15 && joy->axes[1] > -0.15){return;}
-
-  //  for(int i=0;i<15;i++)
-  //  {
-
-  //     sendBasicTrajectory(trajectory_point);
-
-  //  }
 }
 
 int loadLibraries()
@@ -284,8 +103,7 @@ void InitAPIKinova()
   setAngularControl = (int (*)())initCommandLayerFunction("SetAngularControl");
   sendAdvanceTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("SendAdvanceTrajectory");
   sendBasicTrajectory = (int (*)(TrajectoryPoint))initCommandLayerFunction("SendBasicTrajectory");
-  //MyGetCartesianCommand = (int (*)(CartesianPosition &))initCommandLayerFunction("GetCartesianCommand");
- 
+  // MyGetCartesianCommand = (int (*)(CartesianPosition &))initCommandLayerFunction("GetCartesianCommand");
 
   int api_version[API_VERSION_COUNT];
   result = getAPIVersion(api_version);
@@ -370,29 +188,86 @@ void InitAPIKinova()
   }
 }
 
-// void OvisJointGoalCallback(const ovis_msgs::OvisJointGoal::ConstPtr& msg)
-// {
-// acquire lock for arm moving
+void OvisJointGoalCallback(const ovis_msgs::OvisJointGoal::ConstPtr& msg)
+{
+  switch (msg->joint_index)
+  {
+    case 0:
+      trajectory_point.Position.Actuators.Actuator1 = msg->joint_velocity * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator2 = 0;
+      trajectory_point.Position.Actuators.Actuator3 = 0;
+      trajectory_point.Position.Actuators.Actuator4 = 0;
+      trajectory_point.Position.Actuators.Actuator5 = 0;
+      trajectory_point.Position.Actuators.Actuator6 = 0;
 
-// ROS_INFO("msg->joint_index = [%d]", msg->joint_index);
-// ROS_INFO("msg->joint_angle = [%d]", msg->joint_angle);
-// }
+      break;
+    case 1:
+      trajectory_point.Position.Actuators.Actuator1 = 0;
+      trajectory_point.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator3 = 0;
+      trajectory_point.Position.Actuators.Actuator4 = 0;
+      trajectory_point.Position.Actuators.Actuator5 = 0;
+      trajectory_point.Position.Actuators.Actuator6 = 0;
 
-// bool HomeJointCallback(ovis_msgs::HomeJointRequest& request, ovis_msgs::HomeJointResponse& response)
-// {
-// int result = sendBasicTrajectory(home_trajectory_point);
-// if (result == NO_ERROR_KINOVA)
-// {
-// response.home_joint_positions[0] = home_trajectory_point.Position.Actuators[0];
-// response.home_joint_positions[1] = home_trajectory_point.Position.Actuators[1];
-// response.home_joint_positions[2] = home_trajectory_point.Position.Actuators[2];
-// response.home_joint_positions[3] = home_trajectory_point.Position.Actuators[3];
-// response.home_joint_positions[4] = home_trajectory_point.Position.Actuators[4];
-// response.home_joint_positions[5] = home_trajectory_point.Position.Actuators[5];
-// return true;
-// }
-// return false;
-// }
+      break;
+    case 2:
+      trajectory_point.Position.Actuators.Actuator1 = 0;
+      trajectory_point.Position.Actuators.Actuator2 = 0;
+      trajectory_point.Position.Actuators.Actuator3 = msg->joint_velocity * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator4 = 0;
+      trajectory_point.Position.Actuators.Actuator5 = 0;
+      trajectory_point.Position.Actuators.Actuator6 = 0;
+
+      break;
+    case 3:
+
+      trajectory_point.Position.Actuators.Actuator1 = 0;
+      trajectory_point.Position.Actuators.Actuator2 = 0;
+      trajectory_point.Position.Actuators.Actuator3 = 0;
+      trajectory_point.Position.Actuators.Actuator4 = msg->joint_velocity * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator5 = 0;
+      trajectory_point.Position.Actuators.Actuator6 = 0;
+
+      break;
+    case 4:
+
+      trajectory_point.Position.Actuators.Actuator1 = 0;
+      trajectory_point.Position.Actuators.Actuator2 = 0;
+      trajectory_point.Position.Actuators.Actuator3 = 0;
+      trajectory_point.Position.Actuators.Actuator4 = 0;
+      trajectory_point.Position.Actuators.Actuator5 = msg->joint_velocity * NUMBER_OF_DEGREE_PER_SECOND;
+      trajectory_point.Position.Actuators.Actuator6 = 0;
+
+      break;
+    case 5:
+
+      trajectory_point.Position.Actuators.Actuator1 = 0;
+      trajectory_point.Position.Actuators.Actuator2 = 0;
+      trajectory_point.Position.Actuators.Actuator3 = 0;
+      trajectory_point.Position.Actuators.Actuator4 = 0;
+      trajectory_point.Position.Actuators.Actuator5 = 0;
+      trajectory_point.Position.Actuators.Actuator6 = msg->joint_velocity * NUMBER_OF_DEGREE_PER_SECOND;
+
+      break;
+  }
+  sendBasicTrajectory(trajectory_point);
+}
+
+bool HomeJointCallback(ovis_msgs::HomeJointRequest& request, ovis_msgs::HomeJointResponse& response)
+{
+  int result = sendBasicTrajectory(home_trajectory_point);
+  if (result == NO_ERROR_KINOVA)
+  {
+    response.home_joint_positions.at(0) = home_trajectory_point.Position.Actuators.Actuator1;
+    response.home_joint_positions.at(1) = home_trajectory_point.Position.Actuators.Actuator2;
+    response.home_joint_positions.at(2) = home_trajectory_point.Position.Actuators.Actuator3;
+    response.home_joint_positions.at(3) = home_trajectory_point.Position.Actuators.Actuator4;
+    response.home_joint_positions.at(4) = home_trajectory_point.Position.Actuators.Actuator5;
+    response.home_joint_positions.at(5) = home_trajectory_point.Position.Actuators.Actuator6;
+    return true;
+  }
+  return false;
+}
 
 int main(int argc, char** argv)
 {
@@ -449,11 +324,29 @@ int main(int argc, char** argv)
   // trajectory_point.Position.Actuators = joints_angles.Actuators;
 
   // Set home position as start position
-  // home_trajectory_point.Position.Actuators = joints_angles.Actuators;
+  home_trajectory_point.Position.Actuators = joints_angles.Actuators;
 
-  // ros::ServiceServer home_srv = nh.advertiseService("ovis/home_joint_positions", HomeJointCallback);
+  ros::ServiceServer home_srv = nh.advertiseService("ovis/home_joint_positions", HomeJointCallback);
 
-  // ros::Publisher joints_pub = nh.advertise<ovis_msgs::OvisJointAngles>("ovis/joint_angles", 1);
+  ros::Publisher joints_pub = nh.advertise<ovis_msgs::OvisJointAngles>("ovis/joint_angles", 1);
 
-  // ros::Subscriber joint_goal_sub =
-  // nh.subscribe<ovis_msgs::OvisJointGoal>("ovis/joint_goal", 1, OvisJointGoalCallback);
+  ros::Subscriber joint_goal_sub = nh.subscribe<ovis_msgs::OvisJointGoal>("ovis/joint_goal", 1, OvisJointGoalCallback);
+
+  while (ros::ok())
+  {
+    result = getAngularPosition(joints_angles);
+    if (result == NO_ERROR_KINOVA)
+    {
+      joint_angles_msg.joint_angles.at(0) = joints_angles.Actuators.Actuator1;
+      joint_angles_msg.joint_angles.at(1) = joints_angles.Actuators.Actuator2;
+      joint_angles_msg.joint_angles.at(2) = joints_angles.Actuators.Actuator3;
+      joint_angles_msg.joint_angles.at(3) = joints_angles.Actuators.Actuator3;
+      joint_angles_msg.joint_angles.at(4) = joints_angles.Actuators.Actuator4;
+      joint_angles_msg.joint_angles.at(5) = joints_angles.Actuators.Actuator5;
+      joints_pub.publish(joint_angles_msg);
+    }
+    ros::spinOnce();
+  }
+
+  return 0;
+}
