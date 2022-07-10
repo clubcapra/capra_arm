@@ -369,15 +369,6 @@ bool KinovaArm::setTorqueControlParametersService(kinova_msgs::SetTorqueControlP
   return true;
 }
 
-// bool KinovaArm::HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
-// {
-// //   kinova_comm_.
-// //   sendBasicTrajectory(home_trajectory_point); TODO
-//   res.message = "Send home position to actuators";
-//   res.success = static_cast<unsigned char>(true);
-//   return true;
-// }
-
 void KinovaArm::jointVelocityCallback(const kinova_msgs::JointVelocityConstPtr& joint_vel)
 {
   if (!kinova_comm_.isStopped())
