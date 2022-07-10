@@ -593,11 +593,7 @@ void KinovaComm::SendBasicTrajectoryVelocity(TrajectoryPoint& trajectory_point)
 {
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
 
-  TrajectoryPoint kinova_velocity;
-  kinova_velocity.InitStruct();
   startAPI();
-  kinova_velocity.Position.Type = ANGULAR_VELOCITY;
-  kinova_velocity.Position.Actuators = trajectory_point.Position.Actuators;
 
   for (size_t i = 0; i < loop_per_command; i++)
   {
@@ -613,11 +609,7 @@ void KinovaComm::SendBasicTrajectoryPosition(TrajectoryPoint& trajectory_point)
 {
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
 
-  TrajectoryPoint kinova_velocity;
-  kinova_velocity.InitStruct();
   startAPI();
-  kinova_velocity.Position.Type = ANGULAR_POSITION;
-  kinova_velocity.Position.Actuators = trajectory_point.Position.Actuators;
 
   int result = kinova_api_.sendAdvanceTrajectory(trajectory_point);
   if (result != NO_ERROR_KINOVA)
