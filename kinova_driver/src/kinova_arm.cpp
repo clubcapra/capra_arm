@@ -467,7 +467,7 @@ void KinovaArm::OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::Co
 bool KinovaArm::OvisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
   kinova_comm_.SendBasicTrajectoryPosition(home_trajectory_point);
-  res.message = "successfully send home position";  // TODO add a check for the home position
+  res.message = "successfully send home position";
   res.success = static_cast<unsigned char>(true);
   return true;
 }
