@@ -47,14 +47,14 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
     //try USB connection
     API_type_ = connection_type;
 
-    // if (API_type_ == USB)
-    // {
-    //     loadLibraries(KINOVA_USB_LIBRARY,KINOVA_COMM_USB_LIBRARY);
-    // }
-    // else
-    // {
+    if (API_type_ == USB)
+    {
+        loadLibraries(KINOVA_USB_LIBRARY,KINOVA_COMM_USB_LIBRARY);
+    }
+    else
+    {
         loadLibraries(KINOVA_ETH_LIBRARY,KINOVA_COMM_ETH_LIBRARY);
-    // }
+    }
 
     // %Tag(general function)%
 
