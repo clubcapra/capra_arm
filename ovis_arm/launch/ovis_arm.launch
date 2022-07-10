@@ -1,0 +1,6 @@
+<launch>
+    <arg name="robot_namespace" default="/ovis" />
+    <node name="arm" pkg="ovis_arm" type="arm" output="screen" ns="$(arg robot_namespace)">
+        <param name="number_of_degree_per_sec" type="int" value="20"/>
+    </node>
+</launch>

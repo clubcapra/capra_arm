@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ovis_driver</name>
+  <name>ovis_arm</name>
   <version>0.0.0</version>
   <description>
-      The ovis_driver package.
+      The ovis_arm package.
       Contains driver for interacting with Kinova actuators. 
   </description>
 

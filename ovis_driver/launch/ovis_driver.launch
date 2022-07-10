@@ -1,3 +1,0 @@
-<launch>
-    <node name="ovis_driver_node" pkg="ovis_driver" type="ovis_driver_node" output="screen" />
-</launch>

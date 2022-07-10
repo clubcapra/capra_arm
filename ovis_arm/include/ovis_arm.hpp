@@ -1,5 +1,5 @@
-#ifndef OVIS_DEMO_H
-#define OVIS_DEMO_H
+#ifndef OVIS_ARM_H
+#define OVIS_ARM_H
 
 #include "Kinova.API.UsbCommandLayerUbuntu.h"
 #include "KinovaTypes.h"
@@ -23,4 +23,4 @@ static void* API_comm_lib;
 static KinovaDevice devices_list_[MAX_KINOVA_DEVICE];
 static int robot_type;
 
-#endif  // OVIS_DEMO_H
+#endif  // OVIS_ARM_H
