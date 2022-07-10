@@ -54,7 +54,7 @@
 #include "kinova_driver/kinova_api.h"
 #include <std_srvs/Trigger.h>
 #include "ovis_msgs/OvisJointVelocity.h"
-#include "ovis_msgs/OvisJointAngle.h"
+#include "ovis_msgs/OvisJointPosition.h"
 
 namespace kinova
 {

@@ -51,7 +51,7 @@
 
 // #include <std_srvs/Trigger.h>
 #include "ovis_msgs/OvisJointVelocity.h"
-#include "ovis_msgs/OvisJointAngle.h"
+#include "ovis_msgs/OvisJointPosition.h"
 
 namespace kinova
 {
@@ -109,7 +109,7 @@ public:
   bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request& req,
                                         kinova_msgs::RunCOMParametersEstimation::Response& res);
   void OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg);
-  void OvisJointAngleCallback(const ovis_msgs::OvisJointAngle::ConstPtr& msg);
+  void OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
 
 private:
   void positionTimer(const ros::TimerEvent&);
@@ -134,7 +134,7 @@ private:
   ros::Subscriber joint_torque_subscriber_;
   ros::Subscriber cartesian_force_subscriber_;
   ros::Subscriber ovis_joint_velocity_goal_subscriber_;
-  ros::Subscriber ovis_joint_angle_goal_subscriber_;
+  ros::Subscriber ovis_joint_position_goal_subscriber_;
 
   ros::Publisher joint_angles_publisher_;
   ros::Publisher tool_position_publisher_;

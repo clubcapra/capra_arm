@@ -226,8 +226,8 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
       node_handle_.subscribe("in/cartesian_force", 1, &KinovaArm::forceSubscriberCallback, this);
   ovis_joint_velocity_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointVelocity>(
       "joint_velocity_goal", 1, &KinovaArm::OvisJointVelocityCallback, this);
-  ovis_joint_angle_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointAngle>(
-      "joint_angle_goal", 1, &KinovaArm::OvisJointAngleCallback, this);
+  ovis_joint_position_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointPosition>(
+      "joint_position_goal", 1, &KinovaArm::OvisJointPositionCallback, this);
 
   node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 

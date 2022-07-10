@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   OvisIKGoal.msg
-  OvisJointAngle.msg
+  OvisJointPosition.msg
   OvisJointVelocity.msg
 )
 
