@@ -198,7 +198,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
       node_handle_.advertiseService("in/set_torque_control_mode", &KinovaArm::setTorqueControlModeService, this);
   set_torque_control_parameters_service_ = node_handle_.advertiseService(
       "in/set_torque_control_parameters", &KinovaArm::setTorqueControlParametersService, this);
-  ovis_home_service_ = node_handle_.advertiseService("home_joint_positions", &KinovaArm::HomePositionSrvCallback, this);
+  ovis_home_service_ = node_handle_.advertiseService("home_joint_positions", &KinovaArm::OvisHomePositionSrvCallback, this);
 
   /* Set up Publishers */
   joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_angles", 2);
@@ -460,7 +460,7 @@ void KinovaArm::OvisJointAngleCallback(const ovis_msgs::OvisJointAngle::ConstPtr
   kinova_comm_.SendBasicTrajectoryPosition(trajectory_point);
 }
 
-bool KinovaArm::HomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
+bool KinovaArm::OvisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
   kinova_comm_.SendBasicTrajectoryPosition(home_trajectory_point);
   res.message = "successfully send home position";  // TODO add a check for the home position
