@@ -56,7 +56,6 @@ CATKIN_IGNORE
 *.pch
 
 # Compiled Dynamic libraries
-*.so
 *.dylib
 *.dll
 
@@ -79,9 +78,6 @@ CATKIN_IGNORE
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
 
 # Distribution / packaging
 .Python
