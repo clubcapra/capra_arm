@@ -201,7 +201,8 @@ private:
 
   AngularPosition joints_angles;
 
-  TrajectoryPoint trajectory_point;
+  TrajectoryPoint trajectory_point_velocity;
+  TrajectoryPoint trajectory_point_position;
   TrajectoryPoint home_trajectory_point;
 
   int const INVERSE = -1;

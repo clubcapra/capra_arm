@@ -241,9 +241,13 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
 
   ROS_INFO("The arm is ready to use.");
 
-  trajectory_point.InitStruct();
-  trajectory_point.Position.Type = ANGULAR_VELOCITY;
-  trajectory_point.Position.Delay = 0.0;
+  trajectory_point_velocity.InitStruct();
+  trajectory_point_velocity.Position.Type = ANGULAR_VELOCITY;
+  trajectory_point_velocity.Position.Delay = 0.0;
+
+  trajectory_point_position.InitStruct();
+  trajectory_point_position.Position.Type = ANGULAR_POSITION;
+  trajectory_point_position.Position.Delay = 0.0;
 
   home_trajectory_point.InitStruct();
   home_trajectory_point.Position.Type = ANGULAR_POSITION;
@@ -418,46 +422,46 @@ void KinovaArm::forceSubscriberCallback(const kinova_msgs::CartesianForceConstPt
 
 void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg)
 {
-  this->trajectory_point.Position.Actuators.Actuator1 = 0;
-  this->trajectory_point.Position.Actuators.Actuator2 = 0;
-  this->trajectory_point.Position.Actuators.Actuator3 = 0;
-  this->trajectory_point.Position.Actuators.Actuator4 = 0;
-  this->trajectory_point.Position.Actuators.Actuator5 = 0;
-  this->trajectory_point.Position.Actuators.Actuator6 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator1 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator2 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator3 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator4 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator5 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator6 = 0;
   switch (msg->joint_index)
   {
     case 0:
-      trajectory_point.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 1:
-      trajectory_point.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 2:
-      trajectory_point.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 3:
-      trajectory_point.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 4:
-      trajectory_point.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 5:
-      trajectory_point.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
       break;
   }
-  kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point);
+  kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);
 }
 
-void KinovaArm::OvisJointAngleCallback(const ovis_msgs::OvisJointAngle::ConstPtr& msg)
+void KinovaArm::OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg)
 {
-  this->trajectory_point.Position.Actuators.Actuator1 = msg->joint_angles[0];
-  this->trajectory_point.Position.Actuators.Actuator2 = msg->joint_angles[1];
-  this->trajectory_point.Position.Actuators.Actuator3 = msg->joint_angles[2];
-  this->trajectory_point.Position.Actuators.Actuator4 = msg->joint_angles[3];
-  this->trajectory_point.Position.Actuators.Actuator5 = msg->joint_angles[4];
-  this->trajectory_point.Position.Actuators.Actuator6 = msg->joint_angles[5];
+  this->trajectory_point_position.Position.Actuators.Actuator1 = msg->joint_positions[0];
+  this->trajectory_point_position.Position.Actuators.Actuator2 = msg->joint_positions[1];
+  this->trajectory_point_position.Position.Actuators.Actuator3 = msg->joint_positions[2];
+  this->trajectory_point_position.Position.Actuators.Actuator4 = msg->joint_positions[3];
+  this->trajectory_point_position.Position.Actuators.Actuator5 = msg->joint_positions[4];
+  this->trajectory_point_position.Position.Actuators.Actuator6 = msg->joint_positions[5];
 
-  kinova_comm_.SendBasicTrajectoryPosition(trajectory_point);
+  kinova_comm_.SendBasicTrajectoryPosition(trajectory_point_position);
 }
 
 bool KinovaArm::OvisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
