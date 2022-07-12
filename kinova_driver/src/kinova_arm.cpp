@@ -198,7 +198,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
       node_handle_.advertiseService("in/set_torque_control_mode", &KinovaArm::setTorqueControlModeService, this);
   set_torque_control_parameters_service_ = node_handle_.advertiseService(
       "in/set_torque_control_parameters", &KinovaArm::setTorqueControlParametersService, this);
-  ovis_home_service_ = node_handle_.advertiseService("home_joint_positions", &KinovaArm::OvisHomePositionSrvCallback, this);
+  ovis_home_service_ = node_handle_.advertiseService("in/home_joint_positions", &KinovaArm::OvisHomePositionSrvCallback, this);
 
   /* Set up Publishers */
   joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_angles", 2);
