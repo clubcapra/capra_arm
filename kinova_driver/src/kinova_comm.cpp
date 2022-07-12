@@ -589,6 +589,15 @@ void KinovaComm::setJointAngles(const KinovaAngles& angles, double speedJoint123
   }
 }
 
+
+bool KinovaComm::CheckSoftLimits(void)
+{
+  KinovaAngles currentAngles;
+
+  getJointAngles(currentAngles);
+  // if()
+}
+
 void KinovaComm::SendBasicTrajectoryVelocity(TrajectoryPoint& trajectory_point)
 {
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
