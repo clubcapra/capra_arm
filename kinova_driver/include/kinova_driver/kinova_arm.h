@@ -49,7 +49,7 @@
 #include "kinova_driver/kinova_comm.h"
 #include "kinova_driver/kinova_api.h"
 
-// #include <std_srvs/Trigger.h>
+#include <std_srvs/Trigger.h>
 #include "ovis_msgs/OvisJointVelocity.h"
 #include "ovis_msgs/OvisJointPosition.h"
 
@@ -117,6 +117,7 @@ private:
   void jointVelocityTimer(const ros::TimerEvent&);
   void statusTimer(const ros::TimerEvent&);
 
+  void OvisPublishJointPosition(void);
   void publishJointAngles(void);
   void publishToolPosition(void);
   void publishToolWrench(void);
@@ -142,6 +143,7 @@ private:
   ros::Publisher tool_wrench_publisher_;
   ros::Publisher finger_position_publisher_;
   ros::Publisher joint_state_publisher_;
+  ros::Publisher ovis_joint_position_publisher_;
 
   ros::Publisher joint_command_publisher_;
   ros::Publisher cartesian_command_publisher_;

@@ -207,6 +207,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   tool_position_publisher_ = node_handle_.advertise<geometry_msgs::PoseStamped>("out/tool_pose", 2);
   tool_wrench_publisher_ = node_handle_.advertise<geometry_msgs::WrenchStamped>("out/tool_wrench", 2);
   finger_position_publisher_ = node_handle_.advertise<kinova_msgs::FingerPosition>("out/finger_position", 2);
+  ovis_joint_position_publisher_ = node_handle_.advertise<ovis_msgs::OvisJointPosition>("out/joint_position",2);
 
   // Publish last command for relative motion (read current position cause arm drop)
   joint_command_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_command", 2);
@@ -225,9 +226,9 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   cartesian_force_subscriber_ =
       node_handle_.subscribe("in/cartesian_force", 1, &KinovaArm::forceSubscriberCallback, this);
   ovis_joint_velocity_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointVelocity>(
-      "joint_velocity_goal", 1, &KinovaArm::OvisJointVelocityCallback, this);
+      "in/joint_velocity_goal", 1, &KinovaArm::OvisJointVelocityCallback, this);
   ovis_joint_position_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointPosition>(
-      "joint_position_goal", 1, &KinovaArm::OvisJointPositionCallback, this);
+      "in/joint_position_goal", 1, &KinovaArm::OvisJointPositionCallback, this);
 
   node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 
@@ -294,12 +295,20 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
-      false)
-  {
-    ROS_ERROR("Missing param home position for actuator 6");
-    ros::shutdown();
-  }
+  // if (node_handle_.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
+  //     false)
+  // {
+  //   ROS_ERROR("Missing param home position for actuator 6");
+  //   ros::shutdown();
+  // }
+
+  KinovaAngles current_angles;
+  kinova_comm_.getJointAngles(current_angles);
+  ROS_INFO("Actuator 1 = [%f]", current_angles.Actuator1);
+  ROS_INFO("Actuator 2 = [%f]", current_angles.Actuator2);
+  ROS_INFO("Actuator 3 = [%f]", current_angles.Actuator3);
+  ROS_INFO("Actuator 4 = [%f]", current_angles.Actuator4);
+  ROS_INFO("Actuator 5 = [%f]", current_angles.Actuator5);
 }
 
 KinovaArm::~KinovaArm()
@@ -427,14 +436,14 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
   this->trajectory_point_velocity.Position.Actuators.Actuator3 = 0;
   this->trajectory_point_velocity.Position.Actuators.Actuator4 = 0;
   this->trajectory_point_velocity.Position.Actuators.Actuator5 = 0;
-  this->trajectory_point_velocity.Position.Actuators.Actuator6 = 0;
+  // this->trajectory_point_velocity.Position.Actuators.Actuator6 = 0;
   switch (msg->joint_index)
   {
     case 0:
-      trajectory_point_velocity.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator1 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 1:
-      trajectory_point_velocity.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator2 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 2:
       trajectory_point_velocity.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
@@ -445,9 +454,9 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
     case 4:
       trajectory_point_velocity.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
       break;
-    case 5:
-      trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
-      break;
+    // case 5:
+    //   trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
+    //   break;
   }
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);
 }
@@ -459,7 +468,7 @@ void KinovaArm::OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::Co
   this->trajectory_point_position.Position.Actuators.Actuator3 = msg->joint_positions[2];
   this->trajectory_point_position.Position.Actuators.Actuator4 = msg->joint_positions[3];
   this->trajectory_point_position.Position.Actuators.Actuator5 = msg->joint_positions[4];
-  this->trajectory_point_position.Position.Actuators.Actuator6 = msg->joint_positions[5];
+  // this->trajectory_point_position.Position.Actuators.Actuator6 = msg->joint_positions[5];
 
   kinova_comm_.SendBasicTrajectoryPosition(trajectory_point_position);
 }
@@ -869,8 +878,24 @@ void KinovaArm::publishFingerPosition(void)
   finger_position_publisher_.publish(fingers.constructFingersMsg());
 }
 
+void KinovaArm::OvisPublishJointPosition(void)
+{
+  KinovaAngles current_angles;
+  kinova_comm_.getJointAngles(current_angles);
+  ovis_msgs::OvisJointPosition ovis_joint_position_msg;
+  ovis_joint_position_msg.joint_positions[0] = current_angles.Actuator1;
+  ovis_joint_position_msg.joint_positions[1] = current_angles.Actuator2;
+  ovis_joint_position_msg.joint_positions[2] = current_angles.Actuator3;
+  ovis_joint_position_msg.joint_positions[3] = current_angles.Actuator4;
+  ovis_joint_position_msg.joint_positions[4] = current_angles.Actuator5;
+  ovis_joint_position_msg.joint_positions[5] = current_angles.Actuator6;
+  
+  ovis_joint_position_publisher_.publish(ovis_joint_position_msg);
+}
+
 void KinovaArm::statusTimer(const ros::TimerEvent&)
 {
+  OvisPublishJointPosition();
   publishJointAngles();
   publishToolPosition();
   publishToolWrench();
