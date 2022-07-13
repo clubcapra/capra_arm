@@ -13,14 +13,16 @@
     <param name="robot_type" value="$(arg kinova_robotType)" />
     <param name="use_jaco_v1_fingers" value="$(arg use_jaco_v1_fingers)" />
     <param name="status_interval_seconds" value="$(arg feedback_publish_rate)" />
-    <param name="number_of_degree_per_sec" value="5" />
-    <param name="loop_per_command" value="50" />
-    <param name="home_position_actuator1" value="18.703125" />
-    <param name="home_position_actuator2" value="174.750000" />
-    <param name="home_position_actuator3" value="94.031250" />
-    <param name="home_position_actuator4" value="331.909088" />
-    <param name="home_position_actuator5" value="182.659103" />
-    <param name="home_position_actuator6" value="302.113647" />
+    <param name="number_of_degree_per_sec" value="10" />
+    <param name="loop_per_command" value="1" />
+    <param name="home_position_actuator1" value="154.597656" />
+    <param name="home_position_actuator2" value="214.564743" />
+    <param name="home_position_actuator3" value="95.778793" />
+    <param name="home_position_actuator4" value="327.655945" />
+    <param name="home_position_actuator5" value="196.411072" />
+    <param name="home_position_actuator6" value="307.089203" />
   </node>
+
+  <include file="$(find ovis_robotiq_gripper)/launch/ovis_gripper.launch" />
 
 </launch>
