@@ -295,12 +295,12 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
     ros::shutdown();
   }
 
-  // if (node_handle_.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
-  //     false)
-  // {
-  //   ROS_ERROR("Missing param home position for actuator 6");
-  //   ros::shutdown();
-  // }
+  if (node_handle_.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
+      false)
+  {
+    ROS_ERROR("Missing param home position for actuator 6");
+    ros::shutdown();
+  }
 
   KinovaAngles current_angles;
   kinova_comm_.getJointAngles(current_angles);
@@ -309,6 +309,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   ROS_INFO("Actuator 3 = [%f]", current_angles.Actuator3);
   ROS_INFO("Actuator 4 = [%f]", current_angles.Actuator4);
   ROS_INFO("Actuator 5 = [%f]", current_angles.Actuator5);
+  ROS_INFO("Actuator 6 = [%f]", current_angles.Actuator6);
 }
 
 KinovaArm::~KinovaArm()
@@ -889,7 +890,7 @@ void KinovaArm::OvisPublishJointPosition(void)
   ovis_joint_position_msg.joint_positions[3] = current_angles.Actuator4;
   ovis_joint_position_msg.joint_positions[4] = current_angles.Actuator5;
   ovis_joint_position_msg.joint_positions[5] = current_angles.Actuator6;
-  
+
   ovis_joint_position_publisher_.publish(ovis_joint_position_msg);
 }
 
