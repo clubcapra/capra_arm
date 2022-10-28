@@ -13,7 +13,6 @@
     <param name="robot_type" value="$(arg kinova_robotType)" />
     <param name="use_jaco_v1_fingers" value="$(arg use_jaco_v1_fingers)" />
     <param name="status_interval_seconds" value="$(arg feedback_publish_rate)" />
-    <param name="number_of_degree_per_sec" value="5" />
     <param name="loop_per_command" value="50" />
     <param name="home_position_actuator1" value="18.703125" />
     <param name="home_position_actuator2" value="174.750000" />
@@ -21,6 +20,14 @@
     <param name="home_position_actuator4" value="331.909088" />
     <param name="home_position_actuator5" value="182.659103" />
     <param name="home_position_actuator6" value="302.113647" />
+    <param name="max_vel_actuator_1" value="5" />
+    <param name="max_vel_actuator_2" value="5" />
+    <param name="max_vel_actuator_3" value="5" />
+    <param name="max_vel_actuator_4" value="10" />
+    <param name="max_vel_actuator_5" value="10" />
+    <param name="max_vel_actuator_6" value="10" />
+
+
   </node>
 
 </launch>
