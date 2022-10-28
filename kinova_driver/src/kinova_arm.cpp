@@ -480,6 +480,12 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
       trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * max_vel_actuator_6;
       break;
   }
+ 
+  if(kinova_comm_.checkJointsLimits(high_joints_limit,low_joints_limit))
+  {
+    //
+  }
+  else
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);
 }
 
