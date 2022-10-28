@@ -253,11 +253,37 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   home_trajectory_point.Position.Type = ANGULAR_POSITION;
   home_trajectory_point.Position.Delay = 0.0;
 
-  if (node_handle_.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
+  if (node_handle_.getParam("/ovis/arm/max_vel_actuator_1", max_vel_actuator_1) == false)
   {
-    ROS_ERROR("Missing param number_of_degree_per_sec parameter");
+    ROS_ERROR("Missing param max_vel_actuator_1 parameter");
     ros::shutdown();
   }
+  if (node_handle_.getParam("/ovis/arm/max_vel_actuator_2", max_vel_actuator_2) == false)
+  {
+    ROS_ERROR("Missing param max_vel_actuator_2 parameter");
+    ros::shutdown();
+  }
+  if (node_handle_.getParam("/ovis/arm/max_vel_actuator_3", max_vel_actuator_3) == false)
+  {
+    ROS_ERROR("Missing param max_vel_actuator_3 parameter");
+    ros::shutdown();
+  }
+  if (node_handle_.getParam("/ovis/arm/max_vel_actuator_4", max_vel_actuator_4) == false)
+  {
+    ROS_ERROR("Missing param max_vel_actuator_4 parameter");
+    ros::shutdown();
+  }
+  if (node_handle_.getParam("/ovis/arm/max_vel_actuator_5", max_vel_actuator_5) == false)
+  {
+    ROS_ERROR("Missing param max_vel_actuator_5 parameter");
+    ros::shutdown();
+  }
+  if (node_handle_.getParam("/ovis/arm/max_vel_actuator_6", max_vel_actuator_6) == false)
+  {
+    ROS_ERROR("Missing param max_vel_actuator_6 parameter");
+    ros::shutdown();
+  }
+
 
   if (node_handle_.getParam("/ovis/arm/home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) ==
       false)
@@ -427,22 +453,22 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
   switch (msg->joint_index)
   {
     case 0:
-      trajectory_point_velocity.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator1 = msg->joint_velocity * max_vel_actuator_1;
       break;
     case 1:
-      trajectory_point_velocity.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * max_vel_actuator_2;
       break;
     case 2:
-      trajectory_point_velocity.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator3 = msg->joint_velocity * max_vel_actuator_3;
       break;
     case 3:
-      trajectory_point_velocity.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator4 = msg->joint_velocity * max_vel_actuator_4;
       break;
     case 4:
-      trajectory_point_velocity.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator5 = msg->joint_velocity * max_vel_actuator_5;
       break;
     case 5:
-      trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * max_vel_actuator_6;
       break;
   }
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);

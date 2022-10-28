@@ -199,7 +199,16 @@ private:
 
   int number_of_degree_per_sec = 0;
 
+  int max_vel_actuator_1=0;
+  int max_vel_actuator_2=0;
+  int max_vel_actuator_3=0;
+  int max_vel_actuator_4=0;
+  int max_vel_actuator_5=0;
+  int max_vel_actuator_6=0;
+
   AngularPosition joints_angles;
+  AngularPosition low_joints_limit;
+  AngularPostion high_joints_limit
 
   TrajectoryPoint trajectory_point_velocity;
   TrajectoryPoint trajectory_point_position;
