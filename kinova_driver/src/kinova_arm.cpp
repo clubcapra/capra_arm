@@ -422,12 +422,8 @@ void KinovaArm::forceSubscriberCallback(const kinova_msgs::CartesianForceConstPt
 
 void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg)
 {
-  this->trajectory_point_velocity.Position.Actuators.Actuator1 = 0;
-  this->trajectory_point_velocity.Position.Actuators.Actuator2 = 0;
-  this->trajectory_point_velocity.Position.Actuators.Actuator3 = 0;
-  this->trajectory_point_velocity.Position.Actuators.Actuator4 = 0;
-  this->trajectory_point_velocity.Position.Actuators.Actuator5 = 0;
-  this->trajectory_point_velocity.Position.Actuators.Actuator6 = 0;
+  this->trajectory_point_velocity.InitStruct();
+
   switch (msg->joint_index)
   {
     case 0:
