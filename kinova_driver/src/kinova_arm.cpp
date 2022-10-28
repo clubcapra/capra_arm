@@ -253,6 +253,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   home_trajectory_point.Position.Type = ANGULAR_POSITION;
   home_trajectory_point.Position.Delay = 0.0;
 
+
   if (node_handle_.getParam("/ovis/arm/max_vel_actuator_1", max_vel_actuator_1) == false)
   {
     ROS_ERROR("Missing param max_vel_actuator_1 parameter");
@@ -326,6 +327,14 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
     ROS_ERROR("Missing param home position for actuator 6");
     ros::shutdown();
   }
+
+
+  if(setJointLimits(high_joints_limit,low_joints_limit)==false)
+  {
+    ROS_ERROR("Unable to set limits for actuators 1 to 6")
+    ros::shutdown();
+  }
+
 }
 
 KinovaArm::~KinovaArm()
@@ -690,6 +699,29 @@ void KinovaArm::cartesianVelocityWithFingerVelocityCallback(
     kinova_comm_.setCartesianVelocitiesWithFingerVelocity(cartesian_velocities_, fingers);
   }
 }
+
+bool KinovaArm::setJointLimits(const KinovaAngles& high_joints_limit, const KinovaAngles& low_joints_limit)
+{
+  //TBD: values and a way to do this cleaner
+  //
+  low_joints_limit.Actuator1=-180.0; 
+  low_joints_limit.Actuator2=-180.0; 
+  low_joints_limit.Actuator3=-180.0; 
+  low_joints_limit.Actuator4=-180.0; 
+  low_joints_limit.Actuator5=-180.0; 
+  low_joints_limit.Actuator6=-180.0; 
+
+  high_joints_limit.Actuator1=180.0;
+  high_joints_limit.Actuator2=180.0;
+  high_joints_limit.Actuator3=180.0;
+  high_joints_limit.Actuator5=180.0;
+  high_joints_limit.Actuator6=180.0;
+  high_joints_limit.Actuator7=180.0;
+
+  return true; 
+}
+
+
 
 /*!
  * \brief Publishes the current joint angles.

@@ -108,6 +108,8 @@ public:
   bool setJointTorquesToZeroService(kinova_msgs::ZeroTorques::Request& req, kinova_msgs::ZeroTorques::Response& res);
   bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request& req,
                                         kinova_msgs::RunCOMParametersEstimation::Response& res);
+
+  //Angular control 
   void OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg);
   void OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
 
@@ -116,6 +118,8 @@ private:
   void cartesianVelocityTimer(const ros::TimerEvent&);
   void jointVelocityTimer(const ros::TimerEvent&);
   void statusTimer(const ros::TimerEvent&);
+
+  bool setJointLimits(const KinovaAngles& high_joints_limit, const KinovaAngles& low_joints_limit);
 
   void publishJointAngles(void);
   void publishToolPosition(void);
