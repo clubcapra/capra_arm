@@ -208,7 +208,7 @@ private:
 
   AngularPosition joints_angles;
   AngularPosition low_joints_limit;
-  AngularPostion high_joints_limit
+  AngularPosition high_joints_limit;
 
   TrajectoryPoint trajectory_point_velocity;
   TrajectoryPoint trajectory_point_position;

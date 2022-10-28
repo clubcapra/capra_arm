@@ -1703,4 +1703,24 @@ int KinovaComm::SetRedundancyResolutionToleastSquares(int state)
   // Not Available in API
 }
 
+
+
+// Recoit un joint et deux limites, quel DT ? 
+//Faire des rosparam pour les valeurs des limites des joints 1 a 6. 
+bool KinovaComm::checkJointsLimits(const KinovaAngles& high_joints_limit, const KinovaAngles& low_joints_limit)
+{
+  KinovaAngles current_angles;
+
+  getJointAngles(current_angles);
+  
+   if (current_angles.isCloseToOther(high_joints_limit) || current_angles.isCloseToOther(low_joints_limit))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 }  // namespace kinova

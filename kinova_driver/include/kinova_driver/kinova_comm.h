@@ -87,7 +87,6 @@ public:
   void initFingers(void);
   void setEndEffectorOffset(unsigned int status, float x, float y, float z);
   void getEndEffectorOffset(unsigned int& status, float& x, float& y, float& z);
-
   // %EndTag(general functions)
 
   // %Tag(Angular Control)%
@@ -103,7 +102,7 @@ public:
   void getJointTorques(KinovaAngles& tqs);
   void getJointCurrent(AngularPosition& anguler_current);
   void printAngles(const KinovaAngles& angles);
-
+  bool checkJointsLimits(const KinovaAngles& high_joints_limit, const KinovaAngles& low_joints_limit);
   // %EndTag(Angular Control)%
 
   // %Tag(Torque control)%
