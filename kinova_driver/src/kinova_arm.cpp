@@ -459,6 +459,7 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
       trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
       break;
   }
+
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);
 }
 

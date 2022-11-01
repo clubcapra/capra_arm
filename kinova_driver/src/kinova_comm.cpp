@@ -594,7 +594,7 @@ void KinovaComm::SendBasicTrajectoryVelocity(TrajectoryPoint& trajectory_point)
   boost::recursive_mutex::scoped_lock lock(api_mutex_);
 
   startAPI();
-
+  
   for (size_t i = 0; i < loop_per_command; i++)
   {
     int result = kinova_api_.sendAdvanceTrajectory(trajectory_point);
