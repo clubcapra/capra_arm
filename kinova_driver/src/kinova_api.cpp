@@ -331,8 +331,6 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
 
     //setJointZero = (int (*)(int))initCommandLayerFunction("SetJointZero");
 
-        // %EndTag(experimental)%
-
 }
 
 //returns 1 if robot connection sucessful
