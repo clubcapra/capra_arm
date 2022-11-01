@@ -437,14 +437,14 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
   this->trajectory_point_velocity.Position.Actuators.Actuator3 = 0;
   this->trajectory_point_velocity.Position.Actuators.Actuator4 = 0;
   this->trajectory_point_velocity.Position.Actuators.Actuator5 = 0;
-  // this->trajectory_point_velocity.Position.Actuators.Actuator6 = 0;
+  this->trajectory_point_velocity.Position.Actuators.Actuator6 = 0;
   switch (msg->joint_index)
   {
     case 0:
-      trajectory_point_velocity.Position.Actuators.Actuator1 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 1:
-      trajectory_point_velocity.Position.Actuators.Actuator2 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 2:
       trajectory_point_velocity.Position.Actuators.Actuator3 = msg->joint_velocity * number_of_degree_per_sec;
@@ -455,9 +455,9 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
     case 4:
       trajectory_point_velocity.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
       break;
-    // case 5:
-    //   trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
-    //   break;
+    case 5:
+      trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
+      break;
   }
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);
 }
@@ -469,7 +469,7 @@ void KinovaArm::OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::Co
   this->trajectory_point_position.Position.Actuators.Actuator3 = msg->joint_positions[2];
   this->trajectory_point_position.Position.Actuators.Actuator4 = msg->joint_positions[3];
   this->trajectory_point_position.Position.Actuators.Actuator5 = msg->joint_positions[4];
-  // this->trajectory_point_position.Position.Actuators.Actuator6 = msg->joint_positions[5];
+  this->trajectory_point_position.Position.Actuators.Actuator6 = msg->joint_positions[5];
 
   kinova_comm_.SendBasicTrajectoryPosition(trajectory_point_position);
 }

@@ -176,7 +176,6 @@ public:
   // %EndTag(Cartesian Control)%
   void SendBasicTrajectoryVelocity(TrajectoryPoint& trajectory_point);
   void SendBasicTrajectoryPosition(TrajectoryPoint& trajectory_point);
-  bool CheckSoftLimits(void);
 
 
 private:
