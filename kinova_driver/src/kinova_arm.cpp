@@ -198,7 +198,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
       node_handle_.advertiseService("in/set_torque_control_mode", &KinovaArm::setTorqueControlModeService, this);
   set_torque_control_parameters_service_ = node_handle_.advertiseService(
       "in/set_torque_control_parameters", &KinovaArm::setTorqueControlParametersService, this);
-  ovis_home_service_ = node_handle_.advertiseService("in/home_joint_positions", &KinovaArm::OvisHomePositionSrvCallback, this);
+  ovis_home_service_ = node_handle_.advertiseService("in/home_joint_positions", &KinovaArm::ovisHomePositionSrvCallback, this);
 
   /* Set up Publishers */
   joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_angles", 2);
@@ -226,9 +226,9 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   cartesian_force_subscriber_ =
       node_handle_.subscribe("in/cartesian_force", 1, &KinovaArm::forceSubscriberCallback, this);
   ovis_joint_velocity_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointVelocity>(
-      "in/joint_velocity_goal", 1, &KinovaArm::OvisJointVelocityCallback, this);
+      "in/joint_velocity_goal", 1, &KinovaArm::ovisJointVelocityCallback, this);
   ovis_joint_position_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointPosition>(
-      "in/joint_position_goal", 1, &KinovaArm::OvisJointPositionCallback, this);
+      "in/joint_position_goal", 1, &KinovaArm::ovisJointPositionCallback, this);
 
   node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 
@@ -304,12 +304,6 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
 
   KinovaAngles current_angles;
   kinova_comm_.getJointAngles(current_angles);
-  ROS_INFO("Actuator 1 = [%f]", current_angles.Actuator1);
-  ROS_INFO("Actuator 2 = [%f]", current_angles.Actuator2);
-  ROS_INFO("Actuator 3 = [%f]", current_angles.Actuator3);
-  ROS_INFO("Actuator 4 = [%f]", current_angles.Actuator4);
-  ROS_INFO("Actuator 5 = [%f]", current_angles.Actuator5);
-  ROS_INFO("Actuator 6 = [%f]", current_angles.Actuator6);
 }
 
 KinovaArm::~KinovaArm()
@@ -430,7 +424,7 @@ void KinovaArm::forceSubscriberCallback(const kinova_msgs::CartesianForceConstPt
   }
 }
 
-void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg)
+void KinovaArm::ovisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg)
 {
   this->trajectory_point_velocity.Position.Actuators.Actuator1 = 0;
   this->trajectory_point_velocity.Position.Actuators.Actuator2 = 0;
@@ -462,7 +456,7 @@ void KinovaArm::OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
   kinova_comm_.SendBasicTrajectoryVelocity(trajectory_point_velocity);
 }
 
-void KinovaArm::OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg)
+void KinovaArm::ovisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg)
 {
   this->trajectory_point_position.Position.Actuators.Actuator1 = msg->joint_positions[0];
   this->trajectory_point_position.Position.Actuators.Actuator2 = msg->joint_positions[1];
@@ -474,7 +468,7 @@ void KinovaArm::OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::Co
   kinova_comm_.SendBasicTrajectoryPosition(trajectory_point_position);
 }
 
-bool KinovaArm::OvisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
+bool KinovaArm::ovisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
   kinova_comm_.SendBasicTrajectoryPosition(home_trajectory_point);
   res.message = "successfully send home position";
@@ -879,7 +873,7 @@ void KinovaArm::publishFingerPosition(void)
   finger_position_publisher_.publish(fingers.constructFingersMsg());
 }
 
-void KinovaArm::OvisPublishJointPosition(void)
+void KinovaArm::ovisPublishJointPosition(void)
 {
   KinovaAngles current_angles;
   kinova_comm_.getJointAngles(current_angles);
@@ -896,7 +890,7 @@ void KinovaArm::OvisPublishJointPosition(void)
 
 void KinovaArm::statusTimer(const ros::TimerEvent&)
 {
-  OvisPublishJointPosition();
+  ovisPublishJointPosition();
   publishJointAngles();
   publishToolPosition();
   publishToolWrench();
