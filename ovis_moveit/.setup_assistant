@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ovis_description
+    relative_path: urdf/ovis_standalone.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/ovis.srdf
+  CONFIG:
+    author_name: Leo-Daniel Gosselin
+    author_email: leo-daniel.gosselin.1@ens.etsmtl.ca
+    generated_timestamp: 1668213026
