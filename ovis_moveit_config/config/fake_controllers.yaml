@@ -7,6 +7,3 @@ controller_list:
       - ovis_joint_4
       - ovis_joint_5
       - ovis_joint_6
-  # - name: fake_gripper_controller
-  #   joints:
-  #     - finger_joint

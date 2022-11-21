@@ -6,6 +6,6 @@ moveit_setup_assistant_config:
   SRDF:
     relative_path: config/ovis.srdf
   CONFIG:
-    author_name: Club Capra
-    author_email: capra@clubcapra.com
-    generated_timestamp: 1580762291
+    author_name: Alexandre Lapointe
+    author_email: alexandre.lapointe.4@ens.etsmtl.ca
+    generated_timestamp: 1669048335
