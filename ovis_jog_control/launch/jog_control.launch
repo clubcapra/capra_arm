@@ -1,0 +1,6 @@
+ <!-- joy node -->
+  <node respawn="true" pkg="joy"
+        type="joy_node" name="turtle_joy" >
+    <param name="dev" type="string" value="/dev/input/jsX" />
+    <param name="deadzone" value="0.12" />
+  </node>
