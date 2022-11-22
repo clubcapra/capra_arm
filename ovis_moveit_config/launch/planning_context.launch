@@ -18,7 +18,7 @@
 
 </launch>
 
-<!-- COMPARE TOP/BOT  -->
+<!-- COMPARE TOP/BOT  BOT WAS NOT ON THECONSTRUCT-->
 <!--
 <launch>-->
   <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior 
@@ -28,7 +28,7 @@
   <arg name="robot_description" default="robot_description"/>-->
 
   <!-- Load universal robot description format (URDF) 
-  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find ovis_description)/urdf/test_urdf.urdf'"/>
+  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find ovis_description)/urdf/generated_gazebo.urdf'"/>
 -->
   <!-- The semantic description that corresponds to the URDF 
   <param name="$(arg robot_description)_semantic" textfile="$(find ovis_moveit_config)/config/ovis.srdf" />
