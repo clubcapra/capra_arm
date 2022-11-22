@@ -1,6 +1,24 @@
+<<<<<<< HEAD
  <!-- joy node -->
   <node respawn="true" pkg="joy"
         type="joy_node" name="turtle_joy" >
     <param name="dev" type="string" value="/dev/input/jsX" />
     <param name="deadzone" value="0.12" />
   </node>
+=======
+<launch>
+
+    <arg name="joy_config" default="xbox" />
+    <arg name="joy_dev" default="/dev/input/js0" />
+
+    <node pkg="joy" type="joy_node" name="joy_node">
+        <param name="dev" value="$(arg joy_dev)" />
+        <param name="deadzone" value="0.3" />
+        <param name="autorepeat_rate" value="50" />
+    </node>
+
+    <node name="ovis_control" pkg="ovis_jog_control" type="ovis_control" output="screen" />
+
+
+</launch>
+>>>>>>> 6f0c40fb1c5ecfcf736d0e81c881a50732f3052d

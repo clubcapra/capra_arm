@@ -3,7 +3,6 @@
   <arg name="sim" default="true" />
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
-  <arg name="paused" default="false"/>
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(find ovis_description)/urdf/generated_gazebo.urdf"/>
 
@@ -13,6 +12,7 @@
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
       <arg name="debug" value="false"/>
       <arg name="gui" value="$(arg gui)"/>
+      <arg name="paused" value="false"/>
       <arg name="use_sim_time" value="true"/>
       <arg name="headless" value="(arg headless)"/>
     <!-- more default parameters can be changed here -->
