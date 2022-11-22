@@ -11,7 +11,7 @@ import moveit_commander
 class Commander:
     """ Move group planner
     """
-
+    
     def __init__(self):
 
         moveit_commander.roscpp_initialize(sys.argv)
@@ -20,24 +20,18 @@ class Commander:
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
         self.group = moveit_commander.MoveGroupCommander("manipulator")
+        
         rospy.loginfo(self.group.get_planning_frame())
 
         self.display_trajectory_publisher = rospy.Publisher(
             "/move_group/display_planned_path", moveit_msgs.msg.DisplayTrajectory, queue_size=1)
-
-        self.pose = self.group.get_current_pose().pose
-
-        rospy.loginfo(20*"*")
-        rospy.loginfo(self.pose)
-        rospy.loginfo(20*"*")
-
-        rospy.loginfo(self.group.get_current_joint_values())
 
         self.target_pos = self.group.get_current_pose().pose
 
         rospy.Subscriber("joy", Joy, self.joy_callback, queue_size=1)
 
         rospy.spin()
+
 
     # called when joy cmd_joy message is received
     def joy_callback(self, data):
@@ -55,8 +49,10 @@ class Commander:
         rospy.loginfo(self.target_pos)
 
         self.group.set_pose_target(self.target_pos)
+
         self.group.set_planning_time(1)
         self.group.set_num_planning_attempts(1)
+
         self.plan1 = self.group.plan()
         self.group.execute(self.plan1, wait=True)
 
