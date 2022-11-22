@@ -15,7 +15,7 @@ class Commander:
     def __init__(self):
 
         moveit_commander.roscpp_initialize(sys.argv)
-        rospy.init_node("move_ovis", anonymous=True)
+        rospy.init_node("ovis_control", anonymous=True)
 
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
