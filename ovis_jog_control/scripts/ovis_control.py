@@ -20,7 +20,7 @@ class Commander:
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
         self.group = moveit_commander.MoveGroupCommander("manipulator")
-        rospy.loginfo("new_position = %f", self.group.get_planning_frame())
+        rospy.loginfo(self.group.get_planning_frame())
 
         self.display_trajectory_publisher = rospy.Publisher(
             "/move_group/display_planned_path", moveit_msgs.msg.DisplayTrajectory, queue_size=1)
@@ -42,7 +42,7 @@ class Commander:
     # called when joy cmd_joy message is received
     def joy_callback(self, data):
 
-        scalling = 0.01
+        scalling = 0.1
 
         self.target_pos.position.x = self.group.get_current_pose().pose.position.x + \
             data.axes[0] * scalling
@@ -55,10 +55,9 @@ class Commander:
         rospy.loginfo(self.target_pos)
 
         self.group.set_pose_target(self.target_pos)
-        self.group.set_planning_time(5)
+        self.group.set_planning_time(1)
         self.group.set_num_planning_attempts(1)
         self.plan1 = self.group.plan()
-        rospy.loginfo("Return result of go: {}", self.group.go(wait=True))
         self.group.execute(self.plan1, wait=True)
 
         self.group.stop()
