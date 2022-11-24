@@ -21,15 +21,14 @@ class OvisAction(object):
         r = rospy.Rate(1)
         success = True
         
-        print(goal.trajectory.points)
+        print(goal.trajectory.points[-1].positons)
         r.sleep()
           
         if success:
-            self._result.sequence = self._feedback.sequence
             rospy.loginfo('%s: Succeeded' % self._action_name)
-            self._as.set_succeeded(self._result)
+        #    self._as.set_succeeded(self._result)
         
 if __name__ == '__main__':
     rospy.init_node('ovis_action_server')
-    server = OvisAction(rospy.get_name())
+    server = OvisAction("/ovis/joint_trajectory_controller/follow_joint_trajectory")
     rospy.spin()
