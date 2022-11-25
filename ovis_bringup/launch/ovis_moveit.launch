@@ -1,0 +1,17 @@
+<launch>
+    <!-- declare arg to be passed in -->
+    <arg name="gazebo"/> 
+
+    <include file="$(find ovis_gazebo)/launch/gazebo.launch">
+        <arg name="sim" value="$(arg gazebo)" />
+    </include>
+
+    <include file="$(find ovis_moveit_config)/launch/moveit_planning_execution.launch"/>
+
+    <include file="$(find ovis_jog_control)/launch/jog_control.launch"/>
+
+    <group unless="$(arg gazebo)"> 
+        <node name="ovis_control" pkg="ovis_jog_control" type="ovis_action_server.py" output="screen" />
+    </group>
+
+</launch>
