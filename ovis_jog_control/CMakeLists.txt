@@ -20,6 +20,7 @@ include_directories(
 
 install(PROGRAMS
    scripts/ovis_control
+   scripts/ovis_action_server
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
