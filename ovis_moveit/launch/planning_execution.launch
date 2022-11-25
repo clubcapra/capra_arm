@@ -4,9 +4,6 @@
   <arg name="debug" default="false" />
   <arg name="load_robot_description" default="true"/>
 
-  <!-- Load the urdf description from generated_gazebo file to parameter server -->
-  <param name="robot_description" command="$(find xacro)/xacro $(find ovis_description)/urdf/generated_gazebo.urdf"/>
-
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <rosparam command="load" file="$(find ovis_bringup)/config/ovis_controllers.yaml"/>
   <rosparam command="load" file="$(find ovis_moveit_config)/config/joint_names.yaml"/>
@@ -14,10 +11,11 @@
   <!-- load the controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" ns="ovis" args="joint_trajectory_controller joint_state_controller"/>
 
-  <!-- Launch Planning context -->
+  <!-- Launch Planning context 
   <include file="$(find ovis_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="true" />
+    <arg name="load_robot_description" value="false" />
   </include>
+  -->
 
   <!-- Publishes JointState message with values read from /ovis/joints_States -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
