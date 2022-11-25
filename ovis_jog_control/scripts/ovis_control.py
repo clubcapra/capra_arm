@@ -36,28 +36,32 @@ class Commander:
     # called when joy cmd_joy message is received
     def joy_callback(self, data):
 
+        x = data.axes[0]
+        y = data.axes[1]
+        z = data.axes[4]
+
         scalling = 0.1
 
-        self.target_pos.position.x = self.group.get_current_pose().pose.position.x + \
-            data.axes[0] * scalling
-        self.target_pos.position.y = self.group.get_current_pose().pose.position.y + \
-            data.axes[1] * scalling
-        self.target_pos.position.z = self.group.get_current_pose().pose.position.z + \
-            data.axes[3] * scalling
+        deadzone = rospy.get_param("/joy_node/deadzone")
 
-        # rospy.loginfo(self.group.get_current_joint_values())
-        rospy.loginfo(self.target_pos)
+        if abs(x) > deadzone or abs(y) > deadzone or abs(z) > deadzone:
+            self.target_pos.position.x = self.group.get_current_pose().pose.position.x + x * scalling
+            self.target_pos.position.y = self.group.get_current_pose().pose.position.y + y * scalling
+            self.target_pos.position.z = self.group.get_current_pose().pose.position.z + z * scalling 
 
-        self.group.set_pose_target(self.target_pos)
+            # rospy.loginfo(self.group.get_current_joint_values())
+            rospy.loginfo(self.target_pos)
 
-        self.group.set_planning_time(1)
-        self.group.set_num_planning_attempts(1)
+            self.group.set_pose_target(self.target_pos)
 
-        self.plan1 = self.group.plan()
-        self.group.execute(self.plan1, wait=True)
+            self.group.set_planning_time(1)
+            self.group.set_num_planning_attempts(1)
 
-        self.group.stop()
-        self.group.clear_pose_targets()
+            self.plan1 = self.group.plan()
+            self.group.execute(self.plan1, wait=True)
+
+            self.group.stop()
+            self.group.clear_pose_targets()
 
 
 if __name__ == '__main__':
