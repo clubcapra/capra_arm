@@ -26,7 +26,7 @@
     <include file="$(find ovis_moveit_config)/launch/moveit_planning_execution.launch"/>
 
     <!-- Jog -->
-    <include if="$(arg joy)" file="$(find ovis_jog_control)/launch/jog_control.launch"/>
+    <include if="$(arg jog)" file="$(find ovis_jog_control)/launch/jog_control.launch"/>
 
     <!-- Action server -->
     <node unless="$(arg gazebo)" name="ovis_action_server" pkg="ovis_jog_control" type="ovis_action_server.py" output="screen" />
