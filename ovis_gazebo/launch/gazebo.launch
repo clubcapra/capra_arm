@@ -19,7 +19,6 @@
     </include>
   </group>
 
-  <remap unless="$(arg sim)" from="/follow_joint_trajectory" to="/ovis/joint_trajectory_controller/follow_joint_trajectory"/>
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <rosparam file="$(find ovis_bringup)/config/ovis_control.yaml" command="load"/>
   
