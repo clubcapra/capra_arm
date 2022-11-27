@@ -49,7 +49,7 @@
 #include "kinova_driver/kinova_comm.h"
 #include "kinova_driver/kinova_api.h"
 
-// #include <std_srvs/Trigger.h>
+#include <std_srvs/Trigger.h>
 #include "ovis_msgs/OvisJointVelocity.h"
 #include "ovis_msgs/OvisJointPosition.h"
 
@@ -93,7 +93,7 @@ public:
 
   bool setEndEffectorOffsetCallback(kinova_msgs::SetEndEffectorOffset::Request& req,
                                     kinova_msgs::SetEndEffectorOffset::Response& res);
-  bool OvisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+  bool ovisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
 
   // Torque control
   bool setForceControlParamsCallback(kinova_msgs::SetForceControlParams::Request& req,
@@ -108,8 +108,8 @@ public:
   bool setJointTorquesToZeroService(kinova_msgs::ZeroTorques::Request& req, kinova_msgs::ZeroTorques::Response& res);
   bool runCOMParameterEstimationService(kinova_msgs::RunCOMParametersEstimation::Request& req,
                                         kinova_msgs::RunCOMParametersEstimation::Response& res);
-  void OvisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg);
-  void OvisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
+  void ovisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::ConstPtr& msg);
+  void ovisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
 
 private:
   void positionTimer(const ros::TimerEvent&);
@@ -117,6 +117,7 @@ private:
   void jointVelocityTimer(const ros::TimerEvent&);
   void statusTimer(const ros::TimerEvent&);
 
+  void ovisPublishJointPosition(void);
   void publishJointAngles(void);
   void publishToolPosition(void);
   void publishToolWrench(void);
@@ -142,6 +143,7 @@ private:
   ros::Publisher tool_wrench_publisher_;
   ros::Publisher finger_position_publisher_;
   ros::Publisher joint_state_publisher_;
+  ros::Publisher ovis_joint_position_publisher_;
 
   ros::Publisher joint_command_publisher_;
   ros::Publisher cartesian_command_publisher_;

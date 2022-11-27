@@ -329,9 +329,7 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
 
     setTorqueInactivityType = (int (*)(int))initCommandLayerFunction("SetTorqueInactivityType");
 
-    setJointZero = (int (*)(int))initCommandLayerFunction("SetJointZero");
-
-        // %EndTag(experimental)%
+    //setJointZero = (int (*)(int))initCommandLayerFunction("SetJointZero");
 
 }
 
