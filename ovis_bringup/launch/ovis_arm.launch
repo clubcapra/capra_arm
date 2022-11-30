@@ -3,12 +3,14 @@
   <arg name="kinova_robotType" default="c2s6s000" />
   <arg name="kinova_robotName" default="ovis" />
   <arg name="kinova_robotSerial" default="not_set" />
+  <arg name="robotIpAddress" default="192.168.84.160" />
   <arg name="use_jaco_v1_fingers" default="false" />
   <arg name="feedback_publish_rate" default="0.1" />
 
   <node name="$(arg kinova_robotName)" pkg="kinova_driver" type="kinova_arm_driver" output="screen" cwd="node" args="$(arg kinova_robotType)" respawn="true">
     <rosparam file="$(find ovis_bringup)/launch/config/ovis_parameters.yaml" command="load" />
     <param name="serial_number" value="$(arg kinova_robotSerial)" />
+    <param name="robotIpAddress" value="$(arg robotIpAddress)" />
     <param name="robot_name" value="$(arg kinova_robotName)" />
     <param name="robot_type" value="$(arg kinova_robotType)" />
     <param name="use_jaco_v1_fingers" value="$(arg use_jaco_v1_fingers)" />
