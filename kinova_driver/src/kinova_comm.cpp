@@ -71,17 +71,19 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
   // Set ethernet parameters
   EthernetCommConfig ethernet_settings;
   std::string local_IP, subnet_mask;
+  std::string inet_addr_string;
   int local_cmd_port, local_bcast_port;
   node_handle.getParam("ethernet/local_machine_IP", local_IP);
   node_handle.getParam("ethernet/subnet_mask", subnet_mask);
   node_handle.getParam("ethernet/local_cmd_port", local_cmd_port);
   node_handle.getParam("ethernet/local_broadcast_port", local_bcast_port);
+  node_handle.getParam("robotIpAddress", inet_addr_string);
   ethernet_settings.localCmdport = local_cmd_port;
   ethernet_settings.localBcastPort = local_bcast_port;
   ethernet_settings.localIpAddress = inet_addr(local_IP.c_str());
   ethernet_settings.subnetMask = inet_addr(subnet_mask.c_str());
   ethernet_settings.rxTimeOutInMs = 1000;
-  ethernet_settings.robotIpAddress = inet_addr("192.168.100.11");
+  ethernet_settings.robotIpAddress = inet_addr(inet_addr_string.c_str());
   ethernet_settings.robotPort = 55000;
 
   // Get the serial number parameter for the arm we wish to connect to
