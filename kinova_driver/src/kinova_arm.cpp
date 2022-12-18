@@ -231,6 +231,9 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   ovis_joint_position_goal_subscriber_ = node_handle_.subscribe<ovis_msgs::OvisJointPosition>(
       "in/joint_position_goal", 1, &KinovaArm::ovisJointPositionCallback, this);
 
+  ovis_cartesian_goal_subscriber = node_handle_.subscribe<ovis_msgs::OvisJointPosition>(
+      "in/ovis_cartesian_goal", 1, &KinovaArm::ovisCartesianPositionCallback, this);
+
   node_handle_.param<double>("status_interval_seconds", status_interval_seconds_, 0.1);
 
   // Depending on the API version, the arm might return velocities in the
@@ -254,6 +257,10 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   home_trajectory_point.InitStruct();
   home_trajectory_point.Position.Type = ANGULAR_POSITION;
   home_trajectory_point.Position.Delay = 0.0;
+
+  cartesian_trajectory_point.InitStruct();
+  cartesian_trajectory_point.Position.Type=ANGULAR_POSITION;
+  cartesian_trajectory_point.Position.Delay=0.0;
 
   if (node_handle_.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
   {
@@ -466,6 +473,18 @@ void KinovaArm::ovisJointPositionCallback(const ovis_msgs::OvisJointPosition::Co
   this->trajectory_point_position.Position.Actuators.Actuator6 = msg->joint_positions[5];
 
   kinova_comm_.SendBasicTrajectoryPosition(trajectory_point_position);
+}
+
+void KinovaArm::ovisCartesianPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg)
+{
+  this->cartesian_trajectory_point.Position.Actuators.Actuator1 = msg->joint_positions[0];
+  this->cartesian_trajectory_point.Position.Actuators.Actuator2 = msg->joint_positions[1];
+  this->cartesian_trajectory_point.Position.Actuators.Actuator3 = msg->joint_positions[2];
+  this->cartesian_trajectory_point.Position.Actuators.Actuator4 = msg->joint_positions[3];
+  this->cartesian_trajectory_point.Position.Actuators.Actuator5 = msg->joint_positions[4];
+  this->cartesian_trajectory_point.Position.Actuators.Actuator6 = msg->joint_positions[5];
+
+  kinova_comm_.SendBasicTrajectoryPosition(cartesian_trajectory_point);
 }
 
 bool KinovaArm::ovisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
