@@ -144,7 +144,7 @@ private:
   ros::Publisher joint_torque_publisher_;
   ros::Publisher tool_wrench_publisher_;
   ros::Publisher finger_position_publisher_;
-  ros::Publisher joint_state_publisher_;
+  ros::Publisher joint_states_publisher_;
   ros::Publisher ovis_joint_position_publisher_;
 
   ros::Publisher joint_command_publisher_;

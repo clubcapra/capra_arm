@@ -204,7 +204,7 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   /* Set up Publishers */
   joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_angles", 2);
   joint_torque_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_torques", 2);
-  joint_state_publisher_ = node_handle_.advertise<sensor_msgs::JointState>("out/joint_state", 2);
+  joint_states_publisher_ = node_handle_.advertise<sensor_msgs::JointState>("out/joint_states", 2);
   tool_position_publisher_ = node_handle_.advertise<geometry_msgs::PoseStamped>("out/tool_pose", 2);
   tool_wrench_publisher_ = node_handle_.advertise<geometry_msgs::WrenchStamped>("out/tool_wrench", 2);
   finger_position_publisher_ = node_handle_.advertise<kinova_msgs::FingerPosition>("out/finger_position", 2);
@@ -833,7 +833,7 @@ void KinovaArm::publishJointAngles(void)
 
   joint_angles_publisher_.publish(kinova_angles);
   joint_command_publisher_.publish(joint_command_msg);
-  joint_state_publisher_.publish(joint_state);
+  joint_states_publisher_.publish(joint_state);
 }
 
 /*!
