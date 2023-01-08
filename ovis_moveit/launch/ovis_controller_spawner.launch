@@ -1,0 +1,19 @@
+<launch>
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam command="load" file="$(find ovis_bringup)/config/ovis_controllers.yaml"/>
+  <rosparam command="load" file="$(find ovis_moveit_config)/config/joint_names.yaml"/>
+  <!-- loads controller list to the param server -->
+  <rosparam file="$(find ovis_moveit_config)/config/controllers.yaml"/> 
+
+  <param name="use_controller_manager" value="false" />
+  <param name="trajectory_execution/execution_duration_monitoring" value="false" />
+
+  <!-- Define the controller manager plugin to use for trajectory execution -->
+  <param name="moveit_controller_manager" value="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
+ <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" ns="ovis" args="joint_trajectory_controller joint_state_controller"/>
+
+
+
+
+</launch>

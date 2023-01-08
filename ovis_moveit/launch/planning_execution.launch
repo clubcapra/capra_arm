@@ -20,7 +20,7 @@
   <!-- Publishes JointState message with values read from /ovis/joints_States -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
-    <rosparam param="/source_list">[/ovis/joint_states]</rosparam>
+    <rosparam param="/source_list">[/ovis/arm/out/joint_states]</rosparam>
   </node>
 
   <!-- convert joint states to TF transforms -->

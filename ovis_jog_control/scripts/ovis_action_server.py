@@ -14,7 +14,7 @@ class OvisAction(object):
     def __init__(self, name):
         self._action_name = name
         self._pub = rospy.Publisher(
-            "in/ovis_cartesian_goal", OvisJointPosition, queue_size=10)
+            "ovis/arm/in/ovis_cartesian_goal", OvisJointPosition, queue_size=10)
 
         self._as = actionlib.SimpleActionServer(
             self._action_name, control_msgs.msg.FollowJointTrajectoryAction, execute_cb=self.execute_cb, auto_start=False)
@@ -43,5 +43,5 @@ class OvisAction(object):
 if __name__ == '__main__':
     rospy.init_node('ovis_action_server')
     server = OvisAction(
-        "/ovis/joint_trajectory_controller/follow_joint_trajectory")
+        "/ovis/arm/joint_trajectory_controller/follow_joint_trajectory")
     rospy.spin()
