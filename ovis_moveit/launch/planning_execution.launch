@@ -2,22 +2,14 @@
 
   <arg name="pipeline" default="ompl" />
   <arg name="debug" default="false" />
-  <arg name="load_robot_description" default="true"/>
 
-  <!-- Load joint controller configurations from YAML file to parameter server -->
-  <rosparam command="load" file="$(find ovis_bringup)/config/ovis_controllers.yaml"/>
-  <rosparam command="load" file="$(find ovis_moveit_config)/config/joint_names.yaml"/>
-  
-  <!-- load the controllers -->
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" ns="ovis" args="joint_trajectory_controller joint_state_controller"/>
+  <!-- Launch Ovis Controller Spawner --> 
+  <include file="$(find ovis_moveit)/launch/ovis_controller_spawner.launch"/>
 
-  <!-- Launch Planning context 
-  <include file="$(find ovis_moveit_config)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="false" />
-  </include>
-  -->
+  <!-- Launch Planning context --> 
+  <include file="$(find ovis_moveit_config)/launch/planning_context.launch"/>
 
-  <!-- Publishes JointState message with values read from /ovis/joints_States -->
+  <!-- Publishes JointState message with values read from /ovis/arm/out/joints_States -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
     <rosparam param="/source_list">[/ovis/arm/out/joint_states]</rosparam>
@@ -34,7 +26,6 @@
         <arg name="publish_monitored_planning_scene" value="true" />
         <arg name="debug" value="$(arg debug)"/>
         <arg name="pipeline" value="$(arg pipeline)"/>
-        <arg name="load_robot_description" value="$(arg load_robot_description)"/>
     </include>
-
+    
 </launch>

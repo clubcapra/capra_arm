@@ -23,7 +23,7 @@
     <include if="$(arg ovis)" file="$(find ovis_bringup)/launch/ovis_arm.launch"/>
 
     <!-- Move it -->
-    <include file="$(find ovis_moveit_config)/launch/moveit_planning_execution.launch"/>
+    <include file="$(find ovis_moveit)/launch/planning_execution.launch"/>
 
     <!-- Jog -->
     <include if="$(arg jog)" file="$(find ovis_jog_control)/launch/jog_control.launch"/>
