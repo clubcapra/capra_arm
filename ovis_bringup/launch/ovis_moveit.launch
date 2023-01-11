@@ -2,20 +2,22 @@
     <!-- Declare args to be passed in -->
     <arg name="gazebo" default="true"/> 
     <arg name="rviz" default="true"/> 
-    <arg name="ovis" default="false"/> 
+    <arg name="ovis" default="true"/> 
     <arg name="jog" default="true"/> 
+    <arg name="action" default="true"/> 
+    <arg name="moveit" default="true"/> 
 
     <!-- Arm Description -->
     <include file="$(find ovis_description)/launch/load_urdf.launch"/>
 
     <!-- Gazebo -->
-    <include file="$(find ovis_gazebo)/launch/gazebo.launch">
+    <include if="$(arg gazebo)" file="$(find ovis_gazebo)/launch/gazebo.launch">
         <arg name="gui" value="true"/>
         <arg name="headless" value="false"/>
     </include>
 
     <!-- Rviz -->
-    <include file="$(find ovis_rviz)/launch/rviz.launch">
+    <include if="$(arg rviz)" file="$(find ovis_rviz)/launch/rviz.launch">
         <arg name="rviz" value="$(arg rviz)" />
     </include>
 
@@ -23,12 +25,12 @@
     <include if="$(arg ovis)" file="$(find ovis_bringup)/launch/ovis_arm.launch"/>
 
     <!-- Move it -->
-    <include file="$(find ovis_moveit)/launch/planning_execution.launch"/>
+    <include if="$(arg moveit)" file="$(find ovis_moveit)/launch/planning_execution.launch"/>
 
     <!-- Jog -->
     <include if="$(arg jog)" file="$(find ovis_jog_control)/launch/jog_control.launch"/>
 
     <!-- Action server -->
-    <node unless="$(arg gazebo)" name="ovis_action_server" pkg="ovis_jog_control" type="ovis_action_server.py" output="screen" />
+    <node if="$(arg action)" name="ovis_action_server" pkg="ovis_jog_control" type="ovis_action_server.py" output="screen" />
 
 </launch>
