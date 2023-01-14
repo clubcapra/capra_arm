@@ -9,13 +9,15 @@
   <!-- Launch Planning context --> 
   <include file="$(find ovis_moveit_config)/launch/planning_context.launch"/>
 
-  <!-- Publishes JointState message with values read from /ovis/arm/out/joints_States -->
+  <!-- Publishes JointState message with values read from /ovis/arm/out/joints_states -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/>
-    <rosparam param="/source_list">[/ovis/arm/out/joint_states]</rosparam>
+    <rosparam param="/source_list">[/ovis/arm/out/joint_states]</rosparam> 
+    <!--<rosparam param="/source_list">[/ovis/joint_states]</rosparam> GAZEBO !-->
   </node>
 
-  <!-- convert joint states to TF transforms -->
+
+  <!-- convert joint states to TF transforms  <remap from="joint_states" to="/ovis/arm/out/joint_states"/> -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="true" output="screen">
   </node>

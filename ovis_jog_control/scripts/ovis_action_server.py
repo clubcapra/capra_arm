@@ -24,24 +24,33 @@ class OvisAction(object):
         # helper variables
         r = rospy.Rate(1)
         success = True
-        offset_position = [
-            (x*180/3.14159265359) + 180 for x in list(goal.trajectory.points[-1].positions)]
+        joints_angle_offset = []
+        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[0]*180/3.14159265359))
+        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[1]*180/3.14159265359))
+        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[2]*180/3.14159265359))
+        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[3]*180/3.14159265359))
+        joints_angle_offset.append((goal.trajectory.points[-1].positions[4]*180/3.14159265359) + 180)
+        joints_angle_offset.append((goal.trajectory.points[-1].positions[5]*180/3.14159265359) + 180)
+        
+        #joints_angle_offset = [
+        #    (x*180/3.14159265359) + 180 for x in list(goal.trajectory.points[-1].positions)]
 
         # the data to be sent, initialise the array
         data_to_send = OvisJointPosition()
         # assign the array with the value you want to send
         #data_to_send.data = offset_position
-        data_to_send.joint_positions = offset_position
+        data_to_send.joint_positions = joints_angle_offset
         self._pub.publish(data_to_send)
 
         r.sleep()
 
         if success:
+            self._as.set_succeeded()
             rospy.loginfo('%s: Succeeded' % self._action_name)
 
 
 if __name__ == '__main__':
     rospy.init_node('ovis_action_server')
     server = OvisAction(
-        "/ovis/arm/joint_trajectory_controller/follow_joint_trajectory")
+        "/ovis/joint_trajectory_controller/follow_joint_trajectory")
     rospy.spin()

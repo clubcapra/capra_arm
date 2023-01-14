@@ -40,9 +40,11 @@ class Commander:
         y = data.axes[1]
         z = data.axes[4]
 
-        scalling = 0.1
+        scalling = 0.05
 
         deadzone = rospy.get_param("/joy_node/deadzone")
+
+        #print(self.group.get_current_pose().pose.position)
 
         if abs(x) > deadzone or abs(y) > deadzone or abs(z) > deadzone:
             self.target_pos.position.x = self.group.get_current_pose().pose.position.x + x * scalling
@@ -54,14 +56,14 @@ class Commander:
 
             self.group.set_pose_target(self.target_pos)
 
-            self.group.set_planning_time(1)
+            self.group.set_planning_time(0.1)
             self.group.set_num_planning_attempts(1)
 
             self.plan1 = self.group.plan()
-            self.group.execute(self.plan1, wait=True)
+            self.group.execute(self.plan1, wait=False)
 
-            self.group.stop()
-            self.group.clear_pose_targets()
+            #self.group.stop()
+            #self.group.clear_pose_targets()
 
 
 if __name__ == '__main__':
