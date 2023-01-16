@@ -2,7 +2,7 @@ ovis:
   # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
-    publish_rate: 200  
+    publish_rate: 100  
 
 # Trajectory Controllers ---------------------------------------
   joint_trajectory_controller:
@@ -18,35 +18,35 @@ ovis:
       goal_time: 0.5
       stopped_velocity_tolerance: 0.2
       arm_joint_1:
-        trajectory: 300
+        trajectory: 0.5
         goal: 0.1
       arm_joint_2:
-        trajectory: 300
+        trajectory: 0.5
         goal: 0.1
       arm_joint_3:
-        trajectory: 300
+        trajectory: 0.5
         goal: 0.1
       arm_joint_4:
-        trajectory: 300
+        trajectory: 0.5
         goal: 0.1
       arm_joint_5:
-        trajectory: 300
+        trajectory: 0.5
         goal: 0.1
       arm_joint_6:
-        trajectory: 300
+        trajectory: 0.5
         goal: 0.1
 
-    state_publish_rate: 200
+    state_publish_rate: 100
 
 
-#ovis/gazebo_ros_control:  
- #   pid_gains:
- #     arm_joint_1: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
-  #    arm_joint_2: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
-   #   arm_joint_3: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
-    #  arm_joint_4: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
-     # arm_joint_5: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
- #     arm_joint_6: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
+# ovis/gazebo_ros_control:  
+#   pid_gains:
+#     arm_joint_1: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
+#     arm_joint_2: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
+#     arm_joint_3: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
+#     arm_joint_4: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
+#     arm_joint_5: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
+#     arm_joint_6: {p: 100, d: 0.01, i: 0.01, i_clamp: 1}
       
 
     
