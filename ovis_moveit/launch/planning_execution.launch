@@ -2,6 +2,7 @@
 
   <arg name="pipeline" default="ompl" />
   <arg name="debug" default="false" />
+  <arg name="simu" default="false" />
 
   <!-- Launch Ovis Controller Spawner --> 
   <include file="$(find ovis_moveit)/launch/ovis_controller_spawner.launch"/>
@@ -9,15 +10,21 @@
   <!-- Launch Planning context --> 
   <include file="$(find ovis_moveit_config)/launch/planning_context.launch"/>
 
-  <!-- Publishes JointState message with values read from /ovis/arm/out/joints_states -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="/use_gui" value="false"/>
-    <rosparam param="/source_list">[/ovis/arm/out/joint_states]</rosparam> 
-    <!--<rosparam param="/source_list">[/ovis/joint_states]</rosparam> GAZEBO !-->
-  </node>
+  <!-- Publishes /joint_states message with values read from /source_list -->
+  <group if="$(arg simu)">
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="/use_gui" value="false"/>
+      <rosparam param="/source_list">[/ovis/joint_states]</rosparam> 
+    </node>
+  </group>
+  <group unless="$(arg simu)">
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <param name="/use_gui" value="false"/>
+      <rosparam param="/source_list">[/ovis/arm/out/joint_states]</rosparam> 
+    </node>
+  </group>
 
-
-  <!-- convert joint states to TF transforms  <remap from="joint_states" to="/ovis/arm/out/joint_states"/> -->
+  <!-- convert /joint_states message to TF transforms -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="true" output="screen">
   </node>
