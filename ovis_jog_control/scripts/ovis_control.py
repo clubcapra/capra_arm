@@ -46,10 +46,12 @@ class Commander:
 
         #print(self.group.get_current_pose().pose.position)
 
+
         if abs(x) > deadzone or abs(y) > deadzone or abs(z) > deadzone:
-            self.target_pos.position.x = self.group.get_current_pose().pose.position.x + x * scalling
-            self.target_pos.position.y = self.group.get_current_pose().pose.position.y + y * scalling
-            self.target_pos.position.z = self.group.get_current_pose().pose.position.z + z * scalling 
+            self.target_pos = self.group.get_current_pose().pose
+            self.target_pos.position.x += x * scalling
+            self.target_pos.position.y += y * scalling
+            self.target_pos.position.z += z * scalling 
 
             # rospy.loginfo(self.group.get_current_joint_values())
             rospy.loginfo(self.target_pos)

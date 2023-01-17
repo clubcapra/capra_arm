@@ -24,19 +24,27 @@ class OvisAction(object):
         # helper variables
         r = rospy.Rate(1)
         success = True
-        joints_angle_offset = []
-        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[0]*180/3.14159265359))
-        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[1]*180/3.14159265359))
-        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[2]*180/3.14159265359))
-        joints_angle_offset.append(180-(goal.trajectory.points[-1].positions[3]*180/3.14159265359))
-        joints_angle_offset.append((goal.trajectory.points[-1].positions[4]*180/3.14159265359) + 180)
-        joints_angle_offset.append((goal.trajectory.points[-1].positions[5]*180/3.14159265359) + 180)
+        deg2rad = 180/3.14159265359
+        kinova_offset = 180
+        inversed_joint = [4, 5]
+        joints_pos = goal.trajectory.points[-1].positions
         
-        #joints_angle_offset = [
-        #    (x*180/3.14159265359) + 180 for x in list(goal.trajectory.points[-1].positions)]
+        #joints_angle_offset = []
+        #joints_angle_offset.append(kinova_offset-(joints_pos[0]*deg2rad))
+        #joints_angle_offset.append(kinova_offset-(joints_pos[1]*deg2rad))
+        #joints_angle_offset.append(kinova_offset-(joints_pos[2]*deg2rad))
+        #joints_angle_offset.append(kinova_offset-(joints_pos[3]*deg2rad))
+        #joints_angle_offset.append((joints_pos[4]*deg2rad) + kinova_offset)
+        #joints_angle_offset.append((joints_pos[5]*deg2rad) + kinova_offset)
+        
+        joints_angle_offset = [
+            (pos * deg2rad) + kinova_offset if joint_num in inversed_joint 
+             else kinova_offset - (pos * deg2rad)
+              for joint_num, pos in enumerate(list(joints_pos))]
 
         # the data to be sent, initialise the array
         data_to_send = OvisJointPosition()
+        
         # assign the array with the value you want to send
         #data_to_send.data = offset_position
         data_to_send.joint_positions = joints_angle_offset
