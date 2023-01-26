@@ -49,8 +49,8 @@ class Commander:
         self.pre_pose = self.group.get_current_pose().pose 
         self.target_pos = self.group.get_current_pose().pose 
 
-        self.scalling = 0.05
-        self.deadzone = 0.001
+        self.scaling = 0.05
+        self.deadzone = 0.01
         #self.deadzone = rospy.get_param("/joy_node/deadzone")
 
         self.print_cmd()
@@ -295,12 +295,7 @@ class Commander:
         self.toggle_local_world_ref = data.data[6] if len(data.data) >= 7 else 0
         self.toggle_end_effector = data.data[7] if len(data.data) >= 8 else 0
 
-        self.cmd_x *= self.scalling
-        self.cmd_y *= self.scalling
-        self.cmd_z *= self.scalling
-        self.cmd_roll *= self.scalling
-        self.cmd_pitch *= self.scalling
-        self.cmd_yaw *= self.scalling 
+        self.cmd_scalling()
 
     
     def set_cmd_from_joy(self, data):
@@ -320,6 +315,7 @@ class Commander:
             self.cmd_roll = 0
             self.cmd_pitch = 0
             self.cmd_yaw = 0
+            self.cmd_scalling()
             return True
 
         if self.orientation_mode:
@@ -329,6 +325,7 @@ class Commander:
             self.cmd_yaw = data.axes[1]    # Left/Right Axis stick left
             self.cmd_roll = data.axes[0]   # Up/Down Axis stick left
             self.cmd_pitch = data.axes[4]  # Up/Down Axis stick right
+            self.cmd_scalling()
             return True
 
         if data.buttons[7]: # Start
@@ -340,10 +337,20 @@ class Commander:
         
         return False
 
+    def cmd_scalling(self):
+        """ 
+        """
+        self.cmd_x *= self.scaling
+        self.cmd_y *= self.scaling
+        self.cmd_z *= self.scaling
+        self.cmd_roll *= self.scaling
+        self.cmd_pitch *= self.scaling
+        self.cmd_yaw *= self.scaling 
+
     def print_cmd(self):
         """ Print useful informations (x, y, z, roll, pitch, yaw, ref)
         """
-
+    
         print("\n*******************************************")
         print("x: {0:4}, Roll: {1:4}".format(self.cmd_x,self.cmd_roll))
         print("y: {0:4}, pitch:{1:4}".format(self.cmd_y,self.cmd_pitch))
