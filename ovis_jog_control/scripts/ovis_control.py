@@ -125,34 +125,35 @@ class Commander:
             Called when joy message is received
         '''
         
-        self.set_cmd_from_joy(data)
+        joy_input = self.set_cmd_from_joy(data)
 
+        if joy_input:
 
-        if self.toggle_local_world_ref:
-            self.local_ref = not self.local_ref
-            self.world_ref = not self.world_ref
-        
-        if self.toggle_end_effector:
-            self.update_ref()
-
-        self.print_cmd()
-
-        self.update_pre_pos_with_current_pose()
-
-        if self.position_changed():
-            if self.local_ref:
-                self.update_position_with_local()
-            if self.world_ref:
-                self.update_position_with_world()
+            if self.toggle_local_world_ref:
+                self.local_ref = not self.local_ref
+                self.world_ref = not self.world_ref
             
-        if self.orientation_changed():  
-            if self.local_ref:
-                self.update_orientation_with_local()
-            if self.world_ref:
-                self.update_orientation_with_world()
-            
-        if self.position_changed() or self.orientation_changed():
-            self.plan_and_execute()
+            if self.toggle_end_effector:
+                self.update_ref()
+
+            self.print_cmd()
+
+            self.update_pre_pos_with_current_pose()
+
+            if self.position_changed():
+                if self.local_ref:
+                    self.update_position_with_local()
+                if self.world_ref:
+                    self.update_position_with_world()
+                
+            if self.orientation_changed():  
+                if self.local_ref:
+                    self.update_orientation_with_local()
+                if self.world_ref:
+                    self.update_orientation_with_world()
+                
+            if self.position_changed() or self.orientation_changed():
+                self.plan_and_execute()
 
     # ************************* Member Function ****************************************
 
@@ -310,8 +311,7 @@ class Commander:
         self.orientation_mode = True if data.axes[5] == -1 else False
 
         if self.position_mode and self.orientation_mode:
-            self.position_mode = False
-            self.orientation_mode = False
+            return False
 
         if self.position_mode:
             self.cmd_x = data.axes[1]    # Left/Right Axis stick left
@@ -320,6 +320,7 @@ class Commander:
             self.cmd_roll = 0
             self.cmd_pitch = 0
             self.cmd_yaw = 0
+            return True
 
         if self.orientation_mode:
             self.cmd_x = 0
@@ -328,9 +329,16 @@ class Commander:
             self.cmd_yaw = data.axes[1]    # Left/Right Axis stick left
             self.cmd_roll = data.axes[0]   # Up/Down Axis stick left
             self.cmd_pitch = data.axes[4]  # Up/Down Axis stick right
+            return True
 
-        self.toggle_local_world_ref = data.buttons[7] # Select
-        self.toggle_end_effector = data.buttons[3] # Y
+        if data.buttons[7]: # Start
+            self.toggle_local_world_ref = True
+            return True
+        if data.buttons[3]: # Y
+            self.toggle_end_effector = True
+            return True
+        
+        return False
 
     def print_cmd(self):
         """ Print useful informations (x, y, z, roll, pitch, yaw, ref)
