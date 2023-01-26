@@ -306,16 +306,29 @@ class Commander:
         """ Set cmd from joy msg
         """
 
-        self.cmd_x = data.axes[1]    # Left/Right Axis stick left
-        self.cmd_y = -data.axes[0]   # Up/Down Axis stick left
-        z_up = data.buttons[4] # LB
-        z_down = -1 if data.axes[2] <= 0 else 0  # LT
-        self.cmd_z = z_up + z_down
-        self.cmd_yaw = data.axes[3]    # Left/Right Axis stick right
-        self.cmd_roll = data.axes[4]    # Up/Down Axis stick right
-        pitch_up = data.buttons[5] # RB
-        pitch_down = -1 if (data.axes[5] <= 0) else 0 # RT
-        self.pitch = pitch_up + pitch_down
+        self.position_mode = True if data.axes[2] == -1 else False
+        self.orientation_mode = True if data.axes[5] == -1 else False
+
+        if self.position_mode and self.orientation_mode:
+            self.position_mode = False
+            self.orientation_mode = False
+
+        if self.position_mode:
+            self.cmd_x = data.axes[1]    # Left/Right Axis stick left
+            self.cmd_y = -data.axes[0]   # Up/Down Axis stick left
+            self.cmd_z = data.axes[4]    # Up/Down Axis stick right
+            self.cmd_roll = 0
+            self.cmd_pitch = 0
+            self.cmd_yaw = 0
+
+        if self.orientation_mode:
+            self.cmd_x = 0
+            self.cmd_y = 0
+            self.cmd_z = 0
+            self.cmd_yaw = data.axes[1]    # Left/Right Axis stick left
+            self.cmd_roll = data.axes[0]   # Up/Down Axis stick left
+            self.cmd_pitch = data.axes[4]  # Up/Down Axis stick right
+
         self.toggle_local_world_ref = data.buttons[7] # Select
         self.toggle_end_effector = data.buttons[3] # Y
 
