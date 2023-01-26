@@ -53,6 +53,7 @@ class Commander:
 
         self.scaling = 0.05
         self.deadzone = 0.01
+        self.sleep_rate = rospy.Rate(1)
         #self.deadzone = rospy.get_param("/joy_node/deadzone")
 
         self.print_cmd()
@@ -331,15 +332,17 @@ class Commander:
             return True
 
         if data.buttons[7]: # Start
+            self.sleep_rate.sleep()
             self.toggle_local_world_ref = True
             return True
         if data.buttons[3]: # Y
+            self.sleep_rate.sleep()
             self.toggle_end_effector = True
             return True
 
         self.toggle_end_effector = False
         self.toggle_local_world_ref = False
-        
+
         return False
 
     def cmd_scalling(self):
