@@ -728,7 +728,7 @@ void KinovaArm::publishJointAngles(void)
 
   // Transform from Kinova DH algorithm to physical angles in radians, then place into vector array
   joint_state.position.resize(joint_total_number_);
-  joint_state.position[0] = (kinova_angles.joint1 - 180) * M_PI / 180;
+  joint_state.position[0] = -((kinova_angles.joint1 - 180) * M_PI / 180);
   joint_state.position[1] = -((kinova_angles.joint2 - 180) * M_PI / 180);
   joint_state.position[2] = -((kinova_angles.joint3 - 180) * M_PI / 180);
   joint_state.position[3] = -((kinova_angles.joint4 - 180) * M_PI / 180);
