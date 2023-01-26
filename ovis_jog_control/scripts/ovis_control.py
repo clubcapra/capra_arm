@@ -213,7 +213,7 @@ class Commander:
         roll = 0.0
         pitch = 0.0
         yaw = 0.0
-        DTHETA = 0.05
+        DTHETA = 0.1
 
         if self.cmd_yaw >= self.deadzone:
             yaw = yaw + DTHETA * 2
@@ -313,8 +313,8 @@ class Commander:
             return False
 
         if self.position_mode:
-            self.cmd_x = data.axes[1]    # Left/Right Axis stick left
-            self.cmd_y = -data.axes[0]   # Up/Down Axis stick left
+            self.cmd_x = data.axes[1]    # Up/Down Axis stick left
+            self.cmd_y = -data.axes[0]   # Left/Right Axis stick left
             self.cmd_z = data.axes[4]    # Up/Down Axis stick right
             self.cmd_roll = 0
             self.cmd_pitch = 0
@@ -326,9 +326,9 @@ class Commander:
             self.cmd_x = 0
             self.cmd_y = 0
             self.cmd_z = 0
-            self.cmd_roll = data.axes[1]    # Left/Right Axis stick left
-            self.cmd_pitch = data.axes[0]   # Up/Down Axis stick left
-            self.cmd_yaw = data.axes[4]  # Up/Down Axis stick right
+            self.cmd_roll = data.axes[1]    # Up/Down Axis stick left
+            self.cmd_pitch = data.axes[0]   # Left/Right  Axis stick left
+            self.cmd_yaw = data.axes[4]     # Up/Down Axis stick right
             self.cmd_scalling()
             return True
 
@@ -364,6 +364,7 @@ class Commander:
         print("x: {0:4}, Roll: {1:4}".format(self.cmd_x,self.cmd_roll))
         print("y: {0:4}, pitch:{1:4}".format(self.cmd_y,self.cmd_pitch))
         print("z: {0:4}, Yaw:  {1:4}".format(self.cmd_z,self.cmd_yaw))
+        print("Current RPY:  {0}".format(self.group.get_current_rpy()))
         print("Reference: {0}".format("Local" if self.local_ref else "World"))
         print("End effector: {0}".format(self.group.get_end_effector_link()))
         print("Pose Ref Frame: {0}".format(self.group.get_pose_reference_frame()))
