@@ -43,6 +43,8 @@ class Commander:
         self.cmd_yaw = 0
         self.local_ref = 1
         self.world_ref = not self.local_ref
+        self.toggle_local_world_ref = 0
+        self.toggle_end_effector = 0
 
         self.end_effector_list = ["ovis_link_6", "ovis_end_effector"]
 
