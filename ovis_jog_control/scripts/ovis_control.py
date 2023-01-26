@@ -336,6 +336,9 @@ class Commander:
         if data.buttons[3]: # Y
             self.toggle_end_effector = True
             return True
+
+        self.toggle_end_effector = False
+        self.toggle_local_world_ref = False
         
         return False
 
