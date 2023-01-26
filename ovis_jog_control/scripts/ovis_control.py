@@ -129,16 +129,17 @@ class Commander:
         '''
         
         joy_input = self.set_cmd_from_joy(data)
+        
+        if self.toggle_local_world_ref:
+            self.local_ref = not self.local_ref
+            self.world_ref = not self.world_ref
+            self.print_cmd()
+        
+        if self.toggle_end_effector:
+            self.update_ref()
+            self.print_cmd()
 
         if joy_input:
-
-            if self.toggle_local_world_ref:
-                self.local_ref = not self.local_ref
-                self.world_ref = not self.world_ref
-            
-            if self.toggle_end_effector:
-                self.update_ref()
-
             self.print_cmd()
 
             self.update_pre_pos_with_current_pose()
@@ -325,20 +326,20 @@ class Commander:
             self.cmd_x = 0
             self.cmd_y = 0
             self.cmd_z = 0
-            self.cmd_yaw = data.axes[1]    # Left/Right Axis stick left
-            self.cmd_roll = data.axes[0]   # Up/Down Axis stick left
-            self.cmd_pitch = data.axes[4]  # Up/Down Axis stick right
+            self.cmd_roll = data.axes[1]    # Left/Right Axis stick left
+            self.cmd_pitch = data.axes[0]   # Up/Down Axis stick left
+            self.cmd_yaw = data.axes[4]  # Up/Down Axis stick right
             self.cmd_scalling()
             return True
 
         if data.buttons[7]: # Start
             self.sleep_rate.sleep()
             self.toggle_local_world_ref = True
-            return True
+            return False
         if data.buttons[3]: # Y
             self.sleep_rate.sleep()
             self.toggle_end_effector = True
-            return True
+            return False
 
         self.toggle_end_effector = False
         self.toggle_local_world_ref = False
