@@ -125,7 +125,7 @@ class Commander:
             Called when joy message is received
         '''
         
-        self.set_cmd_from_joy()
+        self.set_cmd_from_joy(data)
 
 
         if self.toggle_local_world_ref:
@@ -308,12 +308,16 @@ class Commander:
 
         self.cmd_x = data.axes[1]    # Left/Right Axis stick left
         self.cmd_y = -data.axes[0]   # Up/Down Axis stick left
-        self.cmd_z = data.button[4] if data.button[4] else (data.axes[2] <= 0)  # LB / LT
+        z_up = data.buttons[4] # LB
+        z_down = -1 if data.axes[2] <= 0 else 0  # LT
+        self.cmd_z = z_up + z_down
         self.cmd_yaw = data.axes[3]    # Left/Right Axis stick right
         self.cmd_roll = data.axes[4]    # Up/Down Axis stick right
-        self.cmd_pitch = data.button[5] if data.button[5] else (data.axes[5] <= 0)  # RB / RT
-        self.toggle_local_world_ref = data.button[7] # Select
-        self.toggle_end_effector = data.button[3] # Y
+        pitch_up = data.buttons[5] # RB
+        pitch_down = -1 if (data.axes[5] <= 0) else 0 # RT
+        self.pitch = pitch_up + pitch_down
+        self.toggle_local_world_ref = data.buttons[7] # Select
+        self.toggle_end_effector = data.buttons[3] # Y
 
     def print_cmd(self):
         """ Print useful informations (x, y, z, roll, pitch, yaw, ref)
