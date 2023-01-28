@@ -259,8 +259,12 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   home_trajectory_point.Position.Delay = 0.0;
 
   cartesian_trajectory_point.InitStruct();
-  cartesian_trajectory_point.Position.Type=ANGULAR_POSITION;
-  cartesian_trajectory_point.Position.Delay=0.0;
+  cartesian_trajectory_point.Position.Type = ANGULAR_POSITION;
+  cartesian_trajectory_point.Position.Delay = 0.0;
+
+  cartesian_velocity_trajectory_point.InitStruct();
+  cartesian_velocity_trajectory_point.Position.Type = ANGULAR_VELOCITY;
+  cartesian_trajectory_point.Position.Delay = 0.0;
 
   if (node_handle_.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
   {
@@ -487,6 +491,17 @@ void KinovaArm::ovisCartesianPositionCallback(const ovis_msgs::OvisJointPosition
   kinova_comm_.SendBasicTrajectoryPosition(cartesian_trajectory_point);
 }
 
+void KinovaArm::ovisCartesianVelocityCallback(const kinova_msgs::JointVelocityConstPtr& joint_vel)
+{
+  this->cartesian_trajectory_point.Position.Actuators.Actuator1 = joint_vel->joint1;
+  this->cartesian_trajectory_point.Position.Actuators.Actuator2 = joint_vel->joint2;
+  this->cartesian_trajectory_point.Position.Actuators.Actuator3 = joint_vel->joint3;
+  this->cartesian_trajectory_point.Position.Actuators.Actuator4 = joint_vel->joint4;
+  this->cartesian_trajectory_point.Position.Actuators.Actuator5 = joint_vel->joint5;
+  this->cartesian_trajectory_point.Position.Actuators.Actuator6 = joint_vel->joint6;
+
+  kinova_comm_.SendBasicTrajectoryPosition(cartesian_trajectory_point);
+}
 bool KinovaArm::ovisHomePositionSrvCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res)
 {
   kinova_comm_.SendBasicTrajectoryPosition(home_trajectory_point);

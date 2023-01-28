@@ -112,6 +112,8 @@ public:
   void ovisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
   void ovisCartesianPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
 
+  void ovisCartesianVelocityCallback(const kinova_msgs::JointVelocityConstPtr& joint_vel);
+
 private:
   void positionTimer(const ros::TimerEvent&);
   void cartesianVelocityTimer(const ros::TimerEvent&);
@@ -209,6 +211,7 @@ private:
   TrajectoryPoint trajectory_point_position;
   TrajectoryPoint home_trajectory_point;
   TrajectoryPoint cartesian_trajectory_point;
+  TrajectoryPoint cartesian_velocity_trajectory_point;
 
   int const INVERSE = -1;
 };
