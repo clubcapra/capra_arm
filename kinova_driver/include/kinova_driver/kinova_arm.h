@@ -112,7 +112,7 @@ public:
   void ovisJointPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
   void ovisCartesianPositionCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
 
-  void ovisCartesianVelocityCallback(const kinova_msgs::JointVelocityConstPtr& joint_vel);
+  void ovisCartesianVelocityCallback(const ovis_msgs::OvisJointPosition::ConstPtr& msg);
 
 private:
   void positionTimer(const ros::TimerEvent&);
@@ -140,6 +140,7 @@ private:
   ros::Subscriber ovis_joint_velocity_goal_subscriber_;
   ros::Subscriber ovis_joint_position_goal_subscriber_;
   ros::Subscriber ovis_cartesian_goal_subscriber;
+  ros::Subscriber ovis_cartesian_velocity_subscriber;
 
   ros::Publisher joint_angles_publisher_;
   ros::Publisher tool_position_publisher_;

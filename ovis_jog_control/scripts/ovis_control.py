@@ -39,7 +39,7 @@ class Commander:
         #rospy.Subscriber("joy", Joy, self.joy_position_callback, queue_size=1)
         rospy.Subscriber("joy", Joy, self.joy_velocity_callback, queue_size=1)
 
-        self.pub_joint_velocity_goal = rospy.Publisher("ovis/arm/in/joint_velocity_goal", OvisJointPosition, queue_size=1)
+        self.pub_joint_velocity_goal = rospy.Publisher("ovis/arm/in/ovis_jacobian_velocity", OvisJointPosition, queue_size=1)
 
         self.cmd_x = 0
         self.cmd_y = 0
@@ -230,7 +230,7 @@ class Commander:
 
             joint_velocity_goal = OvisJointPosition()
             joint_velocity_goal.joint_positions = q_dot
-            self.pub_joint_velocity_goal(joint_velocity_goal)
+            self.pub_joint_velocity_goal.publish(joint_velocity_goal)
 
         else:   
             joint_velocity_goal = OvisJointPosition()
