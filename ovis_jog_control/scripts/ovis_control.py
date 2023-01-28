@@ -6,6 +6,8 @@ import rospy
 import moveit_msgs.msg
 import moveit_commander
 import geometry_msgs.msg
+from ovis_msgs.msg import OvisJointPosition
+from kinova_msgs.msg import JointVelocity
 import tf.transformations as tft
 import numpy as np
 import math
@@ -33,7 +35,11 @@ class Commander:
         rospy.Subscriber("command_xyz", Float64MultiArray, self.xyz_callback, queue_size=1)
         rospy.Subscriber("command_rpy", Float64MultiArray, self.rpy_callback, queue_size=1)
         rospy.Subscriber("command_pose", Float64MultiArray, self.pose_callback, queue_size=1)
-        rospy.Subscriber("joy", Joy, self.joy_callback, queue_size=1)
+        rospy.Subscriber("command_v_pose", Float64MultiArray, self.send_velocity_cmd, queue_size=1)
+        #rospy.Subscriber("joy", Joy, self.joy_position_callback, queue_size=1)
+        rospy.Subscriber("joy", Joy, self.joy_velocity_callback, queue_size=1)
+
+        self.pub_joint_velocity_goal = rospy.Publisher("ovis/arm/in/joint_velocity_goal", OvisJointPosition, queue_size=1)
 
         self.cmd_x = 0
         self.cmd_y = 0
@@ -42,7 +48,7 @@ class Commander:
         self.cmd_pitch = 0
         self.cmd_yaw = 0
         self.local_ref = 1
-        self.world_ref = not self.local_ref
+        self.world_ref = 0
         self.toggle_local_world_ref = 0
         self.toggle_end_effector = 0
 
@@ -52,7 +58,7 @@ class Commander:
         self.target_pos = self.group.get_current_pose().pose 
 
         self.scaling = 0.05
-        self.deadzone = 0.01
+        self.deadzone = 0.0001
         self.sleep_rate = rospy.Rate(1)
         #self.deadzone = rospy.get_param("/joy_node/deadzone")
 
@@ -98,10 +104,12 @@ class Commander:
         self.set_cmd_from_float_array(data)
 
         if self.toggle_local_world_ref:
+            print("adfbkhfbsdkhbfsddhkfbsdhj")
             self.local_ref = not self.local_ref
             self.world_ref = not self.world_ref
 
         if self.toggle_end_effector:
+            print("adfbkhfbsdkhbfsddhkfbsdhj")
             self.update_ref()
 
         self.print_cmd()
@@ -123,7 +131,7 @@ class Commander:
         if self.position_changed() or self.orientation_changed():
             self.plan_and_execute()
 
-    def joy_callback(self, data):
+    def joy_position_callback(self, data):
         ''' 
             Called when joy message is received
         '''
@@ -159,6 +167,77 @@ class Commander:
             if self.position_changed() or self.orientation_changed():
                 self.plan_and_execute()
 
+
+
+    def send_velocity_cmd(self,data):
+
+        joy_input = self.set_cmd_from_float_array(data)
+
+        self.update_pre_pos_with_current_pose()
+
+        pos = self.pre_pose.position
+        pos.x = self.cmd_x
+        pos.y = self.cmd_y
+        pos.z = self.cmd_z
+        #r, p, y = self.group.get_current_rpy()
+        r = self.cmd_roll
+        p = self.cmd_pitch
+        y = self.cmd_yaw
+
+
+        jaco = self.group.get_jacobian_matrix(self.group.get_current_joint_values())
+
+        inverse_jaco = np.transpose(jaco)
+
+        x_dot = np.array([pos.x, pos.y, pos.z, r, p, y])
+        x_dot *= 100
+        q_dot = np.dot(inverse_jaco, x_dot)
+
+        print(q_dot)
+
+        joint_velocity_goal = OvisJointPosition()
+        joint_velocity_goal.joint_positions = q_dot
+        self.pub_joint_velocity_goal.publish(joint_velocity_goal)
+
+    def joy_velocity_callback(self, data):
+        ''' 
+            Called when joy message is received
+        '''
+        
+        joy_input = self.set_cmd_from_joy(data)
+
+        self.update_pre_pos_with_current_pose()
+
+
+        if joy_input:
+            pos = self.pre_pose.position
+            pos.x = self.cmd_x
+            pos.y = self.cmd_y
+            pos.z = self.cmd_z
+            r = self.cmd_roll
+            p = self.cmd_pitch
+            y = self.cmd_yaw
+
+            jaco = self.group.get_jacobian_matrix(self.group.get_current_joint_values())
+
+            inverse_jaco = np.transpose(jaco)
+
+            x_dot = np.array([pos.x, pos.y, pos.z, r, p, y])
+            x_dot *= 100
+            q_dot = np.dot(inverse_jaco, x_dot)
+
+            print(q_dot)
+
+            joint_velocity_goal = OvisJointPosition()
+            joint_velocity_goal.joint_positions = q_dot
+            self.pub_joint_velocity_goal(joint_velocity_goal)
+
+        else:   
+            joint_velocity_goal = OvisJointPosition()
+            joint_velocity_goal.joint_positions = np.zeros(6)
+            self.pub_joint_velocity_goal.publish(joint_velocity_goal)
+
+
     # ************************* Member Function ****************************************
 
     def position_changed(self):
@@ -179,6 +258,7 @@ class Commander:
         """
 
         self.pre_pose = self.group.get_current_pose().pose 
+        self.target_pos = self.group.get_current_pose().pose 
 
         self.pre_pose_q = np.array(
             (
@@ -213,7 +293,7 @@ class Commander:
         roll = 0.0
         pitch = 0.0
         yaw = 0.0
-        DTHETA = 0.1
+        DTHETA = 0.05
 
         if self.cmd_yaw >= self.deadzone:
             yaw = yaw + DTHETA * 2
@@ -272,7 +352,7 @@ class Commander:
         """
 
         self.group.set_pose_target(self.target_pos)
-
+        
         # self.group.go(wait=True)
         self.plan1 = self.group.plan()
         self.group.execute(self.plan1, wait=True)
@@ -336,6 +416,7 @@ class Commander:
             self.sleep_rate.sleep()
             self.toggle_local_world_ref = True
             return False
+
         if data.buttons[3]: # Y
             self.sleep_rate.sleep()
             self.toggle_end_effector = True
@@ -369,6 +450,9 @@ class Commander:
         print("End effector: {0}".format(self.group.get_end_effector_link()))
         print("Pose Ref Frame: {0}".format(self.group.get_pose_reference_frame()))
         print("*******************************************\n")
+        print("JACOBIAN {0}".format(self.group.get_jacobian_matrix(self.group.get_current_joint_values()))) 
+        print("*******************************************\n")
+
 
 
 if __name__ == '__main__':
