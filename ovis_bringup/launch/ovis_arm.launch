@@ -13,8 +13,8 @@
     <param name="robot_type" value="$(arg kinova_robotType)" />
     <param name="use_jaco_v1_fingers" value="$(arg use_jaco_v1_fingers)" />
     <param name="status_interval_seconds" value="$(arg feedback_publish_rate)" />
-    <param name="number_of_degree_per_sec" value="30" />
-    <param name="loop_per_command" value="1" />
+    <param name="number_of_degree_per_sec" value="35" />
+    <param name="loop_per_command" value="5" />
     <param name="home_position_actuator1" value="246.00" />
     <param name="home_position_actuator2" value="203.00" />
     <param name="home_position_actuator3" value="117.00" />
