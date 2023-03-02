@@ -435,7 +435,7 @@ void KinovaArm::ovisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
   switch (msg->joint_index)
   {
     case 0:
-      trajectory_point_velocity.Position.Actuators.Actuator1 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator1 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 1:
       trajectory_point_velocity.Position.Actuators.Actuator2 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
@@ -447,7 +447,7 @@ void KinovaArm::ovisJointVelocityCallback(const ovis_msgs::OvisJointVelocity::Co
       trajectory_point_velocity.Position.Actuators.Actuator4 = msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 4:
-      trajectory_point_velocity.Position.Actuators.Actuator5 = msg->joint_velocity * number_of_degree_per_sec;
+      trajectory_point_velocity.Position.Actuators.Actuator5 = INVERSE * msg->joint_velocity * number_of_degree_per_sec;
       break;
     case 5:
       trajectory_point_velocity.Position.Actuators.Actuator6 = msg->joint_velocity * number_of_degree_per_sec;
