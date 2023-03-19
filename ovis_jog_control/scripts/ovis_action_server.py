@@ -3,7 +3,6 @@
 import control_msgs.msg
 import actionlib
 import rospy
-#from std_msgs.msg import Float64MultiArray
 from ovis_msgs.msg import OvisJointPosition
 
 class OvisAction(object):
@@ -15,7 +14,6 @@ class OvisAction(object):
         self._action_name = name
         self._pub = rospy.Publisher(
             "ovis/arm/in/ovis_cartesian_goal", OvisJointPosition, queue_size=10)
-
         self._as = actionlib.SimpleActionServer(
             self._action_name, control_msgs.msg.FollowJointTrajectoryAction, execute_cb=self.execute_cb, auto_start=False)
         self._as.start()
@@ -29,14 +27,6 @@ class OvisAction(object):
         inversed_joint = [4, 5]
         joints_pos = goal.trajectory.points[-1].positions
         
-        #joints_angle_offset = []
-        #joints_angle_offset.append(kinova_offset-(joints_pos[0]*deg2rad))
-        #joints_angle_offset.append(kinova_offset-(joints_pos[1]*deg2rad))
-        #joints_angle_offset.append(kinova_offset-(joints_pos[2]*deg2rad))
-        #joints_angle_offset.append(kinova_offset-(joints_pos[3]*deg2rad))
-        #joints_angle_offset.append((joints_pos[4]*deg2rad) + kinova_offset)
-        #joints_angle_offset.append((joints_pos[5]*deg2rad) + kinova_offset)
-        
         joints_angle_offset = [
             (pos * deg2rad) + kinova_offset if joint_num in inversed_joint 
              else kinova_offset - (pos * deg2rad)
@@ -46,7 +36,6 @@ class OvisAction(object):
         data_to_send = OvisJointPosition()
         
         # assign the array with the value you want to send
-        #data_to_send.data = offset_position
         data_to_send.joint_positions = joints_angle_offset
         self._pub.publish(data_to_send)
 

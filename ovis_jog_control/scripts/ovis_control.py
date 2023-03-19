@@ -104,12 +104,10 @@ class Commander:
         self.set_cmd_from_float_array(data)
 
         if self.toggle_local_world_ref:
-            print("adfbkhfbsdkhbfsddhkfbsdhj")
             self.local_ref = not self.local_ref
             self.world_ref = not self.world_ref
 
         if self.toggle_end_effector:
-            print("adfbkhfbsdkhbfsddhkfbsdhj")
             self.update_ref()
 
         self.print_cmd()
@@ -187,7 +185,7 @@ class Commander:
 
         jaco = self.group.get_jacobian_matrix(self.group.get_current_joint_values())
 
-        inverse_jaco = np.transpose(jaco)
+        inverse_jaco = np.linalg.inv(jaco)
 
         x_dot = np.array([pos.x, pos.y, pos.z, r, p, y])
         x_dot *= 100
@@ -220,7 +218,7 @@ class Commander:
 
             jaco = self.group.get_jacobian_matrix(self.group.get_current_joint_values())
 
-            inverse_jaco = np.transpose(jaco)
+            inverse_jaco = np.linalg.inv(jaco)
 
             x_dot = np.array([pos.x, pos.y, pos.z, r, p, y])
             x_dot *= 100

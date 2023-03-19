@@ -14,27 +14,16 @@ ovis:
       - arm_joint_4
       - arm_joint_5
       - arm_joint_6
+
     constraints:
       goal_time: 0.5
       stopped_velocity_tolerance: 0.2
-      arm_joint_1:
-        trajectory: 0.5
-        goal: 0.1
-      arm_joint_2:
-        trajectory: 0.5
-        goal: 0.1
-      arm_joint_3:
-        trajectory: 0.5
-        goal: 0.1
-      arm_joint_4:
-        trajectory: 0.5
-        goal: 0.1
-      arm_joint_5:
-        trajectory: 0.5
-        goal: 0.1
-      arm_joint_6:
-        trajectory: 0.5
-        goal: 0.1
+      arm_joint_1: {trajectory: 0.5, goal: 0.1}
+      arm_joint_2: {trajectory: 0.5, goal: 0.1}
+      arm_joint_3: {trajectory: 0.5, goal: 0.1}
+      arm_joint_4: {trajectory: 0.5, goal: 0.1}
+      arm_joint_5: {trajectory: 0.5, goal: 0.1}
+      arm_joint_6: {trajectory: 0.5, goal: 0.1}
 
     state_publish_rate: 100
 
