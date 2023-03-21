@@ -1,9 +1,12 @@
 #! /usr/bin/env python
-
+from math import degrees
 import control_msgs.msg
 import actionlib
 import rospy
 from ovis_msgs.msg import OvisJointPosition
+
+kinova_offset = 180
+inversed_joint = [4, 5]
 
 class OvisAction(object):
     # create messages that are used to publish feedback/result
@@ -22,14 +25,11 @@ class OvisAction(object):
         # helper variables
         r = rospy.Rate(1)
         success = True
-        deg2rad = 180/3.14159265359
-        kinova_offset = 180
-        inversed_joint = [4, 5]
         joints_pos = goal.trajectory.points[-1].positions
         
         joints_angle_offset = [
-            (pos * deg2rad) + kinova_offset if joint_num in inversed_joint 
-             else kinova_offset - (pos * deg2rad)
+            degrees(pos) + kinova_offset if joint_num in inversed_joint 
+             else kinova_offset - degrees(pos)
               for joint_num, pos in enumerate(list(joints_pos))]
 
         # the data to be sent, initialise the array

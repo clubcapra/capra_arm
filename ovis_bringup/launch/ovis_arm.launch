@@ -25,5 +25,4 @@
     <param name="home_position_actuator6" value="180.00" />
   </node>
 
-  <!--  <include file="$(find ovis_robotiq_gripper)/launch/ovis_gripper.launch" /> -->
 </launch>
