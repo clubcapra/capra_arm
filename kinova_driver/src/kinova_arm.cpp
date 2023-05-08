@@ -720,7 +720,7 @@ void KinovaArm::publishJointAngles(void)
   }
   if (arm_joint_number_ == 7)
   {
-    joint_state.position[6] = (kinova_angles.joint6 - 180) * M_PI / 180;
+    joint_state.position[6] = (kinova_angles.joint7 - 180) * M_PI / 180;
   }
 
   if (finger_number_ == 2)
