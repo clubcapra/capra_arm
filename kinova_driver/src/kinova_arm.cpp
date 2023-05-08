@@ -254,48 +254,48 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   home_trajectory_point.Position.Type = ANGULAR_POSITION;
   home_trajectory_point.Position.Delay = 0.0;
 
-  if (node_handle_.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
+  if (node_handle_.getParam("number_of_degree_per_sec", number_of_degree_per_sec) == false)
   {
     ROS_ERROR("Missing param number_of_degree_per_sec parameter");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) ==
+  if (node_handle_.getParam("home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 1");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator2", home_trajectory_point.Position.Actuators.Actuator2) ==
+  if (node_handle_.getParam("home_position_actuator2", home_trajectory_point.Position.Actuators.Actuator2) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 2");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator3", home_trajectory_point.Position.Actuators.Actuator3) ==
+  if (node_handle_.getParam("home_position_actuator3", home_trajectory_point.Position.Actuators.Actuator3) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 3");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator4", home_trajectory_point.Position.Actuators.Actuator4) ==
+  if (node_handle_.getParam("home_position_actuator4", home_trajectory_point.Position.Actuators.Actuator4) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 4");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator5", home_trajectory_point.Position.Actuators.Actuator5) ==
+  if (node_handle_.getParam("home_position_actuator5", home_trajectory_point.Position.Actuators.Actuator5) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 5");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
+  if (node_handle_.getParam("home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 6");

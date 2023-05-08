@@ -208,7 +208,7 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
   memset(&kinova_velocity, 0, sizeof(kinova_velocity));
   setCartesianVelocities(kinova_velocity.Position.CartesianPosition);
 
-  if (node_handle.getParam("/ovis/arm/loop_per_command", loop_per_command) == false)
+  if (node_handle.getParam("loop_per_command", loop_per_command) == false)
   {
     ROS_ERROR("Missing loop_per_command");
     ros::shutdown();
