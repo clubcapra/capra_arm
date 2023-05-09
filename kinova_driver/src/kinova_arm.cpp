@@ -254,48 +254,48 @@ KinovaArm::KinovaArm(KinovaComm& arm, const ros::NodeHandle& nodeHandle, const s
   home_trajectory_point.Position.Type = ANGULAR_POSITION;
   home_trajectory_point.Position.Delay = 0.0;
 
-  if (node_handle_.getParam("/ovis/arm/number_of_degree_per_sec", number_of_degree_per_sec) == false)
+  if (node_handle_.getParam("number_of_degree_per_sec", number_of_degree_per_sec) == false)
   {
     ROS_ERROR("Missing param number_of_degree_per_sec parameter");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) ==
+  if (node_handle_.getParam("home_position_actuator1", home_trajectory_point.Position.Actuators.Actuator1) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 1");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator2", home_trajectory_point.Position.Actuators.Actuator2) ==
+  if (node_handle_.getParam("home_position_actuator2", home_trajectory_point.Position.Actuators.Actuator2) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 2");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator3", home_trajectory_point.Position.Actuators.Actuator3) ==
+  if (node_handle_.getParam("home_position_actuator3", home_trajectory_point.Position.Actuators.Actuator3) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 3");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator4", home_trajectory_point.Position.Actuators.Actuator4) ==
+  if (node_handle_.getParam("home_position_actuator4", home_trajectory_point.Position.Actuators.Actuator4) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 4");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator5", home_trajectory_point.Position.Actuators.Actuator5) ==
+  if (node_handle_.getParam("home_position_actuator5", home_trajectory_point.Position.Actuators.Actuator5) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 5");
     ros::shutdown();
   }
 
-  if (node_handle_.getParam("/ovis/arm/home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
+  if (node_handle_.getParam("home_position_actuator6", home_trajectory_point.Position.Actuators.Actuator6) ==
       false)
   {
     ROS_ERROR("Missing param home position for actuator 6");
@@ -709,18 +709,18 @@ void KinovaArm::publishJointAngles(void)
 
   // Transform from Kinova DH algorithm to physical angles in radians, then place into vector array
   joint_state.position.resize(joint_total_number_);
-  joint_state.position[0] = kinova_angles.joint1 * M_PI / 180;
-  joint_state.position[1] = kinova_angles.joint2 * M_PI / 180;
-  joint_state.position[2] = kinova_angles.joint3 * M_PI / 180;
-  joint_state.position[3] = kinova_angles.joint4 * M_PI / 180;
+  joint_state.position[0] = -((kinova_angles.joint1 - 180) * M_PI / 180);
+  joint_state.position[1] = -((kinova_angles.joint2 - 180) * M_PI / 180);
+  joint_state.position[2] = -((kinova_angles.joint3 - 180) * M_PI / 180);
+  joint_state.position[3] = -((kinova_angles.joint4 - 180) * M_PI / 180);
   if (arm_joint_number_ >= 6)
   {
-    joint_state.position[4] = kinova_angles.joint5 * M_PI / 180;
-    joint_state.position[5] = kinova_angles.joint6 * M_PI / 180;
+    joint_state.position[4] = (kinova_angles.joint5 - 180) * M_PI / 180;
+    joint_state.position[5] = (kinova_angles.joint6 - 180) * M_PI / 180;
   }
   if (arm_joint_number_ == 7)
   {
-    joint_state.position[6] = kinova_angles.joint7 * M_PI / 180;
+    joint_state.position[6] = (kinova_angles.joint7 - 180) * M_PI / 180;
   }
 
   if (finger_number_ == 2)
