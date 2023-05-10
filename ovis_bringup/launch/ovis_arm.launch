@@ -23,6 +23,8 @@
     <param name="home_position_actuator6" value="124.00" />
   </node>
 
+  <include file="$(find ovis_robotiq_gripper)/launch/ovis_gripper.launch" />
+
   <param name="robot_description" command="xacro '$(find markhor_description)/urdf/markhor_w_attachments.xacro'" />
 
   <node name="$(arg kinova_robotName)_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" ns="ovis" respawn="true">
