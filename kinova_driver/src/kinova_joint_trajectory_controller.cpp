@@ -26,7 +26,7 @@ JointTrajectoryController::JointTrajectoryController(kinova::KinovaComm &kinova_
     pub_joint_feedback_ = nh_.advertise<control_msgs::FollowJointTrajectoryFeedback>("trajectory_controller/state", 1);
     pub_joint_velocity_ = pn.advertise<kinova_msgs::JointVelocity>("in/joint_velocity", 2);
 
-    traj_frame_id_ = "root";   
+    traj_frame_id_ = "root";
     joint_names_.resize(number_joint_);
     //std::cout << "joint names in feedback of trajectory state are: " << std::endl;
     for (uint i = 0; i<joint_names_.size(); i++)
