@@ -21,5 +21,5 @@ generate_messages(
 )
 
 catkin_package(
-  CATKIN_DEPENDS message_runtime 
+  CATKIN_DEPENDS message_runtime
 )

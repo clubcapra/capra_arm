@@ -28,14 +28,14 @@ void* KinovaAPI::initCommandLayerFunction(const char* name)
 }
 
 void* KinovaAPI::initCommLayerFunction(const char* name)
-{    
+{
     char functionName[100];
     strcpy(functionName,name);
     if (API_type_ == ETHERNET)
     {
         strcpy(functionName, "Ethernet_Communication_");
         strcat(functionName, name);
-    }    
+    }
     void * function_pointer = dlsym(kinova_comm_lib_, name);
     assert(function_pointer != NULL);
     return function_pointer;
@@ -284,7 +284,7 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
 
     setTorqueActuatorDamping = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetTorqueActuatorDamping");
 
-    setTorqueCommandMax = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetTorqueCommandMax");    
+    setTorqueCommandMax = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetTorqueCommandMax");
 
     setTorqueRateLimiter = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetTorqueRateLimiter");
 
@@ -311,7 +311,7 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
 
     setGravityType = (int (*)(GRAVITY_TYPE))initCommandLayerFunction("SetGravityType");
 
-    setGravityVector = (int (*)(float[GRAVITY_VECTOR_SIZE]))initCommandLayerFunction("SetGravityVector");    
+    setGravityVector = (int (*)(float[GRAVITY_VECTOR_SIZE]))initCommandLayerFunction("SetGravityVector");
 
     getAngularTorqueCommand = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("GetAngularTorqueCommand");
 
@@ -319,11 +319,11 @@ int KinovaAPI::initializeKinovaAPIFunctions(KinovaAPIType connection_type)
 
     setSwitchThreshold = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetSwitchThreshold");
 
-    setPositionLimitDistance = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetPositionLimitDistance");   
+    setPositionLimitDistance = (int (*)(float[COMMAND_SIZE]))initCommandLayerFunction("SetPositionLimitDistance");
 
     setTorqueVibrationController = (int (*)(float))initCommandLayerFunction("SetTorqueVibrationController");
 
-    setTorqueRobotProtection = (int (*)(int))initCommandLayerFunction("SetTorqueRobotProtection");    
+    setTorqueRobotProtection = (int (*)(int))initCommandLayerFunction("SetTorqueRobotProtection");
 
     getTrajectoryTorqueMode = (int (*)(int &))initCommandLayerFunction("GetTrajectoryTorqueMode");
 

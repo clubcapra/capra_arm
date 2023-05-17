@@ -74,7 +74,7 @@ public:
     int (*getForcesInfo)(ForcesInfo &);
     int (*getSensorsInfo)(SensorsInfo &);
     int (*getGripperStatus)(Gripper &);
-    int (*getCommandVelocity)(float[CARTESIAN_SIZE], float[MAX_ACTUATORS]);    
+    int (*getCommandVelocity)(float[CARTESIAN_SIZE], float[MAX_ACTUATORS]);
 
     // %EndTag(general function)%
 
@@ -87,7 +87,7 @@ public:
     int (*getAngularVelocity)(AngularPosition &);
     int (*getAngularAcceleration)(AngularAcceleration &);
 
-    int (*getAngularForce)(AngularPosition &);    
+    int (*getAngularForce)(AngularPosition &);
 
     int (*getAngularCurrent)(AngularPosition &);
     int (*getAngularCurrentMotor)(AngularPosition &);
@@ -197,12 +197,12 @@ public:
 
     int (*setActuatorPIDFilter)(int, float, float, float);
     int (*setAngularInertiaDamping)(AngularInfo, AngularInfo);
-    int (*getAngularForceGravityFree)(AngularPosition &);    
+    int (*getAngularForceGravityFree)(AngularPosition &);
     int (*getAngularTorqueCommand)(float[COMMAND_SIZE]);
     int (*getAngularTorqueGravityEstimation)(float[COMMAND_SIZE]);
     int (*setTorqueActuatorGain)(float[COMMAND_SIZE]);
     int (*setTorqueActuatorDamping)(float[COMMAND_SIZE]);
-    int (*setTorqueCommandMax)(float[COMMAND_SIZE]);    
+    int (*setTorqueCommandMax)(float[COMMAND_SIZE]);
     int (*setTorqueRateLimiter)(float[COMMAND_SIZE]);
     int (*setTorqueFeedCurrent)(float[COMMAND_SIZE]);
     int (*setTorqueFeedVelocity)(float[COMMAND_SIZE]);

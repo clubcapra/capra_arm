@@ -7,7 +7,7 @@ jointSpeedLimitParameter2: 20
 # payload: [COM COMx COMy COMz]
 #payload: [0, 0, 0, 0]
 
-# For controlling the arm with USB change the connection_type to: USB 
+# For controlling the arm with USB change the connection_type to: USB
 # and for controlling the arm in Ethernet change it to: Ethernet
 connection_type: Ethernet
 
