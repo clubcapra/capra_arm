@@ -77,7 +77,7 @@ KinovaComm::KinovaComm(const ros::NodeHandle& node_handle, boost::recursive_mute
   node_handle.getParam("ethernet/subnet_mask", subnet_mask);
   node_handle.getParam("ethernet/local_cmd_port", local_cmd_port);
   node_handle.getParam("ethernet/local_broadcast_port", local_bcast_port);
-  node_handle.getParam("robotIpAddress", inet_addr_string);
+  node_handle.getParam("kinovaControllerIpAddress", inet_addr_string);
   ethernet_settings.localCmdport = local_cmd_port;
   ethernet_settings.localBcastPort = local_bcast_port;
   ethernet_settings.localIpAddress = inet_addr(local_IP.c_str());
