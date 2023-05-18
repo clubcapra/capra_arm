@@ -18,12 +18,12 @@
   <!-- Spawn a robot into Gazebo -->
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="
     -param robot_description -urdf -model ovis
-    -J ovis_joint_1 0
-    -J ovis_joint_2 -1.57
-    -J ovis_joint_3 1.57
-    -J ovis_joint_4 0
-    -J ovis_joint_5 0
-    -J ovis_joint_6 0
+    -J arm_joint_1 0
+    -J arm_joint_2 -1.57
+    -J arm_joint_3 1.57
+    -J arm_joint_4 0
+    -J arm_joint_5 0
+    -J arm_joint_6 0
     " />
 
   <!-- ros_control launch file -->

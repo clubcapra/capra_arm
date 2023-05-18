@@ -1,8 +1,8 @@
 controller_joint_names:
-  - ovis_joint_1
-  - ovis_joint_2
-  - ovis_joint_3
-  - ovis_joint_4
-  - ovis_joint_5
-  - ovis_joint_6
+  - arm_joint_1
+  - arm_joint_2
+  - arm_joint_3
+  - arm_joint_4
+  - arm_joint_5
+  - arm_joint_6
   # - finger_joint
