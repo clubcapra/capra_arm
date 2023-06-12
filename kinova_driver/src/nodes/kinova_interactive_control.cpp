@@ -453,7 +453,7 @@ void currentPoseFeedback(const kinova_msgs::KinovaPoseConstPtr pose_command)
 /// \return
 ///
 int main(int argc, char** argv)
-{   
+{
     ros::init(argc, argv, "kinova_interactive_control");
     ros::NodeHandle nh("~");
     // Retrieve the (non-option) argument:
